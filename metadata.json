@@ -1,0 +1,6 @@
+{
+  "name": "Gaming Cafe Manager",
+  "description": "A professional admin management system for gaming cafes to manage stations, sessions, bookings, snacks, offers, payments, customers, and daily revenue PDF reports.",
+  "requestFramePermissions": [],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}
