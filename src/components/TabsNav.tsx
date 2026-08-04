@@ -9,10 +9,12 @@ import {
   Monitor,
   BarChart3,
   History,
-  CreditCard
+  CreditCard,
+  Radio
 } from 'lucide-react';
 
 export type TabType =
+  | 'live'
   | 'new'
   | 'sessions'
   | 'bookings'
@@ -36,6 +38,7 @@ export const TabsNav: React.FC<TabsNavProps> = ({
   activeSessionsCount
 }) => {
   const tabs: { id: TabType; label: string; icon: React.ReactNode; badge?: number }[] = [
+    { id: 'live', label: 'Live Station Monitor', icon: <Radio className="w-4 h-4 text-emerald-400 animate-pulse" /> },
     { id: 'new', label: 'New Session', icon: <Zap className="w-4 h-4 text-purple-400" /> },
     { id: 'sessions', label: 'Sessions', icon: <Gamepad2 className="w-4 h-4 text-purple-400" />, badge: activeSessionsCount },
     { id: 'bookings', label: 'Bookings', icon: <Calendar className="w-4 h-4 text-purple-400" /> },

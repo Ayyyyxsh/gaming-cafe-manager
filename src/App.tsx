@@ -11,6 +11,7 @@ import { StationsTab } from './components/StationsTab';
 import { TodayTab } from './components/TodayTab';
 import { HistoryTab } from './components/HistoryTab';
 import { RazorpayTab } from './components/RazorpayTab';
+import { LiveStationBoard } from './components/LiveStationBoard';
 import { EditModal } from './components/EditModal';
 import { AdminLogin } from './components/AdminLogin';
 
@@ -43,7 +44,12 @@ import {
 } from './api';
 
 export default function App() {
-  const [activeTab, setActiveTab] = useState<TabType>('new');
+  const [activeTab, setActiveTab] = useState<TabType>(() => {
+    if (typeof window !== 'undefined' && window.location.search.includes('view=live')) {
+      return 'live';
+    }
+    return 'live';
+  });
   const [isAuthenticated, setIsAuthenticated] = useState<boolean>(() => {
     return localStorage.getItem('omg_admin_auth') === 'true';
   });
@@ -125,8 +131,15 @@ export default function App() {
 
   useEffect(() => {
     loadData();
-    const interval = setInterval(loadData, 10000); // 10s background sync
-    return () => clearInterval(interval);
+    const interval = setInterval(loadData, 3000); // 3s real-time live sync across devices
+    const handleFocus = () => loadData();
+    window.addEventListener('focus', handleFocus);
+    window.addEventListener('visibilitychange', handleFocus);
+    return () => {
+      clearInterval(interval);
+      window.removeEventListener('focus', handleFocus);
+      window.removeEventListener('visibilitychange', handleFocus);
+    };
   }, [loadData]);
 
   // Actions
@@ -401,6 +414,16 @@ export default function App() {
 
       {/* Tab Panels */}
       <main className="mt-2">
+        {activeTab === 'live' && (
+          <LiveStationBoard
+            stations={appData.stations || []}
+            sessions={appData.sessions || []}
+            bookings={appData.bookings || []}
+            onRefresh={loadData}
+            isBackendConnected={isBackendConnected}
+          />
+        )}
+
         {activeTab === 'new' && (
           <NewSessionTab
             stations={appData.stations || []}
