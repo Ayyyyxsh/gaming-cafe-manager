@@ -30,8 +30,15 @@ export const SessionsTab: React.FC<SessionsTabProps> = ({
     return ids.map(id => stations.find(st => st.id === id)?.name || id).join(', ');
   };
 
-  const activeSessions = sessions.filter(s => s.status === 'active');
-  const endedSessions = sessions.filter(s => s.status === 'ended');
+  const activeSessions = [...sessions.filter(s => s.status === 'active')].sort((a, b) => {
+    const timeA = a.createdAt || 0;
+    const timeB = b.createdAt || 0;
+    if (timeB !== timeA) return timeB - timeA;
+    return (b.startTime || '').localeCompare(a.startTime || '');
+  });
+  const endedSessions = [...sessions.filter(s => s.status === 'ended')].sort((a, b) => {
+    return (b.endedAt || b.endTime || '').localeCompare(a.endedAt || a.endTime || '');
+  });
 
   return (
     <div className="flex flex-col gap-4">
@@ -113,6 +120,11 @@ export const SessionsTab: React.FC<SessionsTabProps> = ({
                             ? `Split ₹${s.cashAmt || 0} Cash / ₹${s.upiAmt || 0} UPI`
                             : s.pm}
                         </span>
+                        {s.status === 'active' && s.createdAt && (Date.now() - s.createdAt < 20000) && (
+                          <span className="px-2 py-0.5 rounded-full bg-emerald-500/20 border border-emerald-400 text-emerald-300 text-[10px] font-extrabold uppercase animate-pulse">
+                            Just Started
+                          </span>
+                        )}
                       </div>
 
                       <div className="flex flex-wrap items-center gap-3 text-xs text-[#9c8fc6]">

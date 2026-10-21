@@ -66,13 +66,14 @@ export interface Session {
     value: number;
     freeMins?: number;
   } | null;
-  pm: 'Cash' | 'UPI' | 'Razorpay' | 'Split' | 'Pending';
+  pm: 'Cash' | 'UPI' | 'Split' | 'Pending';
   cashAmt?: number;
   upiAmt?: number;
   note?: string;
   status: 'active' | 'ended';
   endedAt?: string;
   date: string; // "YYYY-MM-DD"
+  createdAt?: number;
 }
 
 export interface Booking {
@@ -86,7 +87,7 @@ export interface Booking {
   duration: number;
   advance: number;
   notes?: string;
-  status: 'pending' | 'confirmed' | 'cancelled';
+  status: 'pending' | 'confirmed' | 'cancelled' | 'converted';
 }
 
 export interface Customer {

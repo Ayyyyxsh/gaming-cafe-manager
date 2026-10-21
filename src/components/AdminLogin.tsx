@@ -79,12 +79,12 @@ export const AdminLogin: React.FC<AdminLoginProps> = ({
   };
 
   return (
-    <div className="min-h-screen bg-[#08030f] bg-[radial-gradient(ellipse_80%_80%_at_50%_-20%,rgba(124,58,237,0.35),rgba(255,255,255,0))] flex items-center justify-center p-4 relative overflow-hidden font-sans text-white">
-      {/* Ambient background glows */}
-      <div className="absolute top-1/4 left-1/2 -translate-x-1/2 -translate-y-1/2 w-96 h-96 bg-red-600/15 rounded-full blur-3xl pointer-events-none" />
-      <div className="absolute bottom-1/4 right-1/4 w-80 h-80 bg-purple-600/15 rounded-full blur-3xl pointer-events-none" />
+    <div className="min-h-screen bg-[#06030c] flex items-center justify-center p-4 relative overflow-hidden font-['Rajdhani',sans-serif] text-[#f1edff]">
+      {/* Ambient background cyber glows */}
+      <div className="absolute top-1/4 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[32rem] h-[32rem] bg-purple-600/15 rounded-full blur-[100px] pointer-events-none" />
+      <div className="absolute bottom-1/4 right-1/4 w-80 h-80 bg-cyan-500/10 rounded-full blur-[90px] pointer-events-none" />
 
-      <div className="relative z-10 w-full max-w-md bg-gradient-to-b from-[#180f2e]/90 to-[#0d071b]/95 border border-purple-500/30 rounded-3xl p-6 sm:p-8 shadow-[0_20px_60px_-15px_rgba(124,58,237,0.4)] backdrop-blur-2xl">
+      <div className="relative z-10 w-full max-w-md bg-gradient-to-b from-[#140b24]/90 to-[#080412]/95 border border-purple-500/35 rounded-3xl p-6 sm:p-8 shadow-[0_25px_70px_-15px_rgba(0,0,0,0.95),0_0_30px_-5px_rgba(168,85,247,0.25)] backdrop-blur-2xl">
         {/* Brand Header */}
         <div className="flex flex-col items-center text-center gap-3 mb-6">
           <div className="relative group">
@@ -99,11 +99,11 @@ export const AdminLogin: React.FC<AdminLoginProps> = ({
           </div>
 
           <div className="flex flex-col">
-            <h1 className="font-['Exo_2'] font-black text-2xl tracking-wider bg-gradient-to-r from-white via-red-200 to-[#ff4dab] bg-clip-text text-transparent uppercase">
+            <h1 className="font-['Exo_2'] font-black text-2xl tracking-wider bg-gradient-to-r from-white via-cyan-200 to-purple-400 bg-clip-text text-transparent uppercase">
               OH MY GAME · NERO
             </h1>
             <p className="text-[11px] uppercase tracking-[0.2em] text-[#9c8fc6] font-bold mt-1 flex items-center justify-center gap-1.5">
-              <ShieldCheck className="w-3.5 h-3.5 text-emerald-400" /> Admin Master Control Panel
+              <ShieldCheck className="w-3.5 h-3.5 text-emerald-400" /> Admin Master HUD Console
             </p>
           </div>
         </div>

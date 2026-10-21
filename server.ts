@@ -1,33 +1,29 @@
+import 'dotenv/config';
 import express, { Request, Response } from 'express';
 import path from 'path';
 import fs from 'fs';
 import crypto from 'crypto';
-import Razorpay from 'razorpay';
 import { fileURLToPath } from 'url';
-import { supabase, mapBookingForSupabase, mapBookingFromSupabase } from './src/lib/supabase.js';
+import {
+  supabase,
+  isSupabaseConfigured,
+  SUPABASE_URL,
+  SUPABASE_PROJECT_ID,
+  SUPABASE_SQL_SCHEMA,
+  mapBookingForSupabase,
+  mapBookingFromSupabase,
+  mapSessionForSupabase,
+  mapSessionFromSupabase
+} from './src/lib/supabase';
 
-// Lazy Razorpay Client initialization
-let razorpayClient: Razorpay | null = null;
-function getRazorpay(): Razorpay | null {
-  const key_id = process.env.RAZORPAY_KEY_ID || process.env.VITE_RAZORPAY_KEY_ID;
-  const key_secret = process.env.RAZORPAY_KEY_SECRET;
-  if (!key_id || !key_secret || key_id.includes('YOUR_KEY_ID')) {
-    return null;
-  }
-  if (!razorpayClient) {
-    razorpayClient = new Razorpay({ key_id, key_secret });
-  }
-  return razorpayClient;
-}
+const _filename = typeof __filename !== 'undefined' ? __filename : (import.meta && import.meta.url ? fileURLToPath(import.meta.url) : '');
+const _dirname = typeof __dirname !== 'undefined' ? __dirname : path.dirname(_filename || process.cwd());
 
-const __filename = fileURLToPath(import.meta.url);
-const __dirname = path.dirname(__filename);
-
-const PORT = 3000;
+const PORT = process.env.PORT ? parseInt(process.env.PORT, 10) : 3000;
 export const app = express();
 app.use(express.json({ limit: '10mb' }));
 
-const DATA_DIR = path.join(__dirname, 'data');
+const DATA_DIR = path.join(_dirname, 'data');
 const DB_FILE = path.join(DATA_DIR, 'db.json');
 
 // Default Database Template
@@ -197,7 +193,8 @@ function getInitialDB() {
         ts: Date.now(),
         read: false
       }
-    ]
+    ],
+    adminAccount: null
   };
 }
 
@@ -230,12 +227,14 @@ function saveDB(db: any) {
   }
 }
 
-// Supabase Sync Helpers for Bookings
+// Supabase Sync Helpers for Bookings & Sessions
 async function fetchBookingsFromSupabase(): Promise<any[] | null> {
+  if (!supabase || !isSupabaseConfigured) {
+    return null;
+  }
   try {
     const { data, error } = await supabase.from('bookings').select('*');
     if (error) {
-      // Table missing or RLS not set up - return null cleanly to fall back to local JSON DB
       return null;
     }
     if (data && Array.isArray(data)) {
@@ -248,195 +247,271 @@ async function fetchBookingsFromSupabase(): Promise<any[] | null> {
 }
 
 async function syncBookingToSupabase(booking: any) {
+  if (!supabase || !isSupabaseConfigured) {
+    return;
+  }
   try {
     const payload = mapBookingForSupabase(booking);
     const { error } = await supabase.from('bookings').upsert(payload);
-    if (error) {
-      console.warn('Supabase sync info:', error.message);
+    if (!error) {
+      console.log('✅ Booking successfully synced to Supabase:', booking.id);
     } else {
-      console.log('✅ Booking successfully synced to Supabase (kefxydzqwdjzlmvnrjbt):', booking.id);
+      console.warn('⚠️ Supabase booking sync notice:', error.message);
     }
-  } catch (err: any) {
-    console.warn('Supabase sync notice:', err?.message || err);
+  } catch (err) {
+    console.warn('⚠️ Supabase booking sync err:', err);
   }
 }
 
 async function deleteBookingFromSupabase(id: string) {
+  if (!supabase || !isSupabaseConfigured) {
+    return;
+  }
   try {
     const { error } = await supabase.from('bookings').delete().eq('id', id);
-    if (error) {
-      console.warn('Supabase delete notice:', error.message);
-    } else {
+    if (!error) {
       console.log('✅ Booking deleted from Supabase:', id);
     }
-  } catch (err: any) {
-    console.warn('Supabase delete notice:', err?.message || err);
+  } catch {}
+}
+
+async function fetchSessionsFromSupabase(): Promise<any[] | null> {
+  if (!supabase || !isSupabaseConfigured) {
+    return null;
   }
+  try {
+    const { data, error } = await supabase.from('sessions').select('*');
+    if (error) {
+      return null;
+    }
+    if (data && Array.isArray(data)) {
+      return data.map(mapSessionFromSupabase);
+    }
+    return [];
+  } catch {
+    return null;
+  }
+}
+
+async function syncSessionToSupabase(session: any) {
+  if (!supabase || !isSupabaseConfigured) {
+    return;
+  }
+  try {
+    const payload = mapSessionForSupabase(session);
+    const { error } = await supabase.from('sessions').upsert(payload);
+    if (!error) {
+      console.log('✅ Session successfully synced to Supabase:', session.id);
+    } else {
+      console.warn('⚠️ Supabase session sync notice:', error.message);
+    }
+  } catch (err) {
+    console.warn('⚠️ Supabase session sync err:', err);
+  }
+}
+
+async function deleteSessionFromSupabase(id: string) {
+  if (!supabase || !isSupabaseConfigured) {
+    return;
+  }
+  try {
+    const { error } = await supabase.from('sessions').delete().eq('id', id);
+    if (!error) {
+      console.log('✅ Session deleted from Supabase:', id);
+    }
+  } catch {}
 }
 
 // REST API Endpoints
 
-const SQL_SETUP_SNIPPET = `CREATE TABLE IF NOT EXISTS public.bookings (
-    id TEXT PRIMARY KEY,
-    name TEXT NOT NULL,
-    phone TEXT,
-    date TEXT NOT NULL,
-    time TEXT NOT NULL,
-    station_ids JSONB,
-    station_id TEXT,
-    duration INTEGER DEFAULT 60,
-    advance NUMERIC DEFAULT 0,
-    notes TEXT,
-    status TEXT DEFAULT 'confirmed',
-    updated_at TIMESTAMPTZ DEFAULT NOW()
-);
-
--- Enable RLS and public access
-ALTER TABLE public.bookings ENABLE ROW LEVEL SECURITY;
-DROP POLICY IF EXISTS "Allow public access" ON public.bookings;
-CREATE POLICY "Allow public access" ON public.bookings FOR ALL USING (true) WITH CHECK (true);`;
-
-// Razorpay Payment Gateway Endpoints
-app.get('/api/razorpay/config', (req: Request, res: Response) => {
-  const keyId = process.env.RAZORPAY_KEY_ID || process.env.VITE_RAZORPAY_KEY_ID || '';
-  const isConfigured = Boolean(process.env.RAZORPAY_KEY_SECRET && keyId && !keyId.includes('YOUR_KEY_ID'));
-  res.json({
-    keyId: isConfigured ? keyId : (keyId || 'rzp_test_demo'),
-    isConfigured,
-    mode: isConfigured ? 'live_or_test' : 'demo_sandbox',
-    currency: 'INR'
-  });
-});
-
-app.post('/api/razorpay/create-order', async (req: Request, res: Response) => {
-  try {
-    const { amount, receipt, notes } = req.body;
-    const numAmount = Number(amount) || 0;
-    if (numAmount <= 0) {
-      return res.status(400).json({ success: false, message: 'Invalid payment amount' });
-    }
-
-    const rzp = getRazorpay();
-    const amountInPaise = Math.round(numAmount * 100);
-    const keyId = process.env.RAZORPAY_KEY_ID || process.env.VITE_RAZORPAY_KEY_ID || 'rzp_test_demo';
-
-    if (rzp) {
-      const order = await rzp.orders.create({
-        amount: amountInPaise,
-        currency: 'INR',
-        receipt: receipt || `rcpt_${Date.now()}`,
-        notes: notes || {}
-      });
-      return res.json({
-        success: true,
-        orderId: order.id,
-        amount: order.amount,
-        currency: order.currency,
-        keyId,
-        isSimulated: false
-      });
-    } else {
-      // Demo / Test Sandbox mode fallback order when keys are pending
-      const simulatedId = `order_sim_${Math.random().toString(36).substring(2, 12)}`;
-      return res.json({
-        success: true,
-        orderId: simulatedId,
-        amount: amountInPaise,
-        currency: 'INR',
-        keyId: keyId.includes('YOUR_KEY_ID') ? 'rzp_test_demo' : keyId,
-        isSimulated: true,
-        notice: 'Razorpay keys pending in .env. Running in interactive Test Sandbox mode.'
-      });
-    }
-  } catch (err: any) {
-    console.error('Razorpay Order Creation Error:', err);
-    res.status(500).json({ success: false, message: err?.message || 'Failed to create Razorpay Order' });
-  }
-});
-
-app.post('/api/razorpay/verify-payment', (req: Request, res: Response) => {
-  try {
-    const { razorpay_order_id, razorpay_payment_id, razorpay_signature } = req.body;
-
-    if (razorpay_order_id && razorpay_order_id.startsWith('order_sim_')) {
-      return res.json({
-        success: true,
-        verified: true,
-        paymentId: razorpay_payment_id || `pay_sim_${Date.now()}`,
-        isSimulated: true,
-        message: 'Test payment completed successfully'
-      });
-    }
-
-    const key_secret = process.env.RAZORPAY_KEY_SECRET;
-    if (!key_secret || key_secret.includes('YOUR_KEY_SECRET')) {
-      return res.json({
-        success: true,
-        verified: true,
-        paymentId: razorpay_payment_id || `pay_sim_${Date.now()}`,
-        isSimulated: true,
-        message: 'Payment recorded (Sandbox verification)'
-      });
-    }
-
-    const hmac = crypto.createHmac('sha256', key_secret);
-    hmac.update(`${razorpay_order_id}|${razorpay_payment_id}`);
-    const generated_signature = hmac.digest('hex');
-
-    if (generated_signature === razorpay_signature) {
-      return res.json({
-        success: true,
-        verified: true,
-        paymentId: razorpay_payment_id
-      });
-    } else {
-      return res.status(400).json({
-        success: false,
-        verified: false,
-        message: 'Razorpay signature verification failed'
-      });
-    }
-  } catch (err: any) {
-    res.status(500).json({ success: false, message: err?.message || 'Verification failed' });
-  }
-});
 app.get('/api/supabase/status', async (req: Request, res: Response) => {
+  if (!supabase || !isSupabaseConfigured) {
+    return res.json({
+      connected: false,
+      configured: false,
+      bookingsTableExists: false,
+      sessionsTableExists: false,
+      tableExists: false,
+      projectId: SUPABASE_PROJECT_ID,
+      error: null,
+      message: 'Local server storage active. Supabase cloud sync is optional.',
+      sqlSetup: SUPABASE_SQL_SCHEMA
+    });
+  }
+
   try {
-    const { error } = await supabase.from('bookings').select('id').limit(1);
-    const isTableMissing = error?.message?.includes('schema cache') || error?.message?.includes('does not exist');
-    
+    const [bRes, sRes] = await Promise.all([
+      supabase.from('bookings').select('id').limit(1),
+      supabase.from('sessions').select('id').limit(1)
+    ]);
+
+    const bookingsTableExists = !bRes.error;
+    const sessionsTableExists = !sRes.error;
+    const tableExists = bookingsTableExists && sessionsTableExists;
+    const projectId = SUPABASE_URL.split('//')[1]?.split('.')[0] || SUPABASE_PROJECT_ID;
+
+    let message = 'Supabase cloud database live & sync active for Bookings & Sessions';
+    if (!bookingsTableExists && !sessionsTableExists) {
+      message = 'Tables "bookings" and "sessions" need to be created in Supabase SQL Editor';
+    } else if (!bookingsTableExists) {
+      message = 'Table "bookings" needs to be created in Supabase SQL Editor';
+    } else if (!sessionsTableExists) {
+      message = 'Table "sessions" needs to be created in Supabase SQL Editor';
+    }
+
     res.json({
       connected: true,
-      tableExists: !error,
-      projectId: 'kefxydzqwdjzlmvnrjbt',
-      error: error ? error.message : null,
-      message: !error 
-        ? 'Supabase database live & sync active' 
-        : isTableMissing 
-          ? 'Table public.bookings needs to be created in Supabase SQL Editor'
-          : error.message,
-      sqlSetup: SQL_SETUP_SNIPPET
+      configured: true,
+      bookingsTableExists,
+      sessionsTableExists,
+      tableExists,
+      projectId,
+      error: (bRes.error || sRes.error)?.message || null,
+      message,
+      sqlSetup: SUPABASE_SQL_SCHEMA
     });
   } catch (err: any) {
     res.json({
       connected: false,
+      configured: true,
+      bookingsTableExists: false,
+      sessionsTableExists: false,
       tableExists: false,
-      projectId: 'kefxydzqwdjzlmvnrjbt',
+      projectId: SUPABASE_PROJECT_ID,
       error: err?.message || String(err),
-      sqlSetup: SQL_SETUP_SNIPPET
+      message: 'Unable to reach Supabase endpoint. Using local storage.',
+      sqlSetup: SUPABASE_SQL_SCHEMA
     });
   }
+});
+
+// Admin Single-Slot Auth Endpoints
+app.get('/api/admin/status', (req: Request, res: Response) => {
+  const db = loadDB();
+  const hasAdmin = Boolean(db.adminAccount && db.adminAccount.username);
+  res.json({
+    hasAdminAccount: hasAdmin,
+    adminName: hasAdmin ? db.adminAccount.name : null,
+    adminUsername: hasAdmin ? db.adminAccount.username : null,
+    createdAt: hasAdmin ? db.adminAccount.createdAt : null,
+    singleSlotAvailable: !hasAdmin
+  });
+});
+
+app.post('/api/admin/register', (req: Request, res: Response) => {
+  const db = loadDB();
+  if (db.adminAccount && db.adminAccount.username) {
+    return res.status(403).json({
+      success: false,
+      message: 'Admin account slot is already claimed and permanently closed. Only 1 administrator account is permitted.'
+    });
+  }
+
+  const { name, username, password } = req.body;
+  if (!name || !name.trim()) {
+    return res.status(400).json({ success: false, message: 'Admin full name is required.' });
+  }
+  if (!username || !username.trim()) {
+    return res.status(400).json({ success: false, message: 'Admin username or email is required.' });
+  }
+  if (!password || password.length < 4) {
+    return res.status(400).json({ success: false, message: 'Admin password must be at least 4 characters.' });
+  }
+
+  const salt = 'omg_nero_master_salt_2026';
+  const passwordHash = crypto.createHash('sha256').update(password + salt).digest('hex');
+
+  db.adminAccount = {
+    id: 'admin-' + Math.random().toString(36).substring(2, 9),
+    name: name.trim(),
+    username: username.trim().toLowerCase(),
+    passwordHash,
+    createdAt: new Date().toISOString()
+  };
+
+  saveDB(db);
+
+  res.json({
+    success: true,
+    message: 'Master Admin account created successfully! The single slot is now locked.',
+    admin: {
+      name: db.adminAccount.name,
+      username: db.adminAccount.username,
+      createdAt: db.adminAccount.createdAt
+    }
+  });
+});
+
+app.post('/api/admin/login', (req: Request, res: Response) => {
+  const db = loadDB();
+  const { username, password } = req.body;
+
+  if (!username || !password) {
+    return res.status(400).json({ success: false, message: 'Username and password are required.' });
+  }
+
+  const salt = 'omg_nero_master_salt_2026';
+  const inputHash = crypto.createHash('sha256').update(password + salt).digest('hex');
+
+  if (db.adminAccount && db.adminAccount.username) {
+    const isUserMatch = db.adminAccount.username === username.trim().toLowerCase();
+    const isPassMatch = db.adminAccount.passwordHash === inputHash;
+
+    if (isUserMatch && isPassMatch) {
+      return res.json({
+        success: true,
+        admin: {
+          name: db.adminAccount.name,
+          username: db.adminAccount.username
+        }
+      });
+    }
+
+    return res.status(401).json({ success: false, message: 'Invalid admin username or password.' });
+  }
+
+  return res.status(401).json({
+    success: false,
+    message: 'No admin account found. Please register using the single admin slot.'
+  });
 });
 
 // 1. Get full database state
 app.get('/api/data', async (req: Request, res: Response) => {
   const db = loadDB();
-  const supabaseBookings = await fetchBookingsFromSupabase();
-  if (supabaseBookings && supabaseBookings.length > 0) {
-    db.bookings = supabaseBookings;
-    saveDB(db);
+  if (isSupabaseConfigured) {
+    try {
+      const [supabaseBookings, supabaseSessions] = await Promise.all([
+        fetchBookingsFromSupabase(),
+        fetchSessionsFromSupabase()
+      ]);
+
+      let hasChanges = false;
+      if (supabaseBookings && supabaseBookings.length > 0) {
+        db.bookings = supabaseBookings;
+        hasChanges = true;
+      }
+      if (supabaseSessions && supabaseSessions.length > 0) {
+        // Merge Supabase sessions with local sessions, preserving unique sessions
+        const existingSessionIds = new Set(supabaseSessions.map((s: any) => s.id));
+        const localOnlySessions = (db.sessions || []).filter((s: any) => !existingSessionIds.has(s.id));
+        db.sessions = [...supabaseSessions, ...localOnlySessions];
+        hasChanges = true;
+      }
+      if (hasChanges) {
+        saveDB(db);
+      }
+    } catch (err) {
+      console.warn('Non-blocking Supabase initial sync notice:', err);
+    }
   }
-  res.json({ success: true, data: db, supabaseConnected: true, projectId: 'kefxydzqwdjzlmvnrjbt' });
+  const projectId = isSupabaseConfigured ? (SUPABASE_URL.split('//')[1]?.split('.')[0] || SUPABASE_PROJECT_ID) : null;
+  res.json({
+    success: true,
+    data: db,
+    supabaseConnected: isSupabaseConfigured,
+    projectId
+  });
 });
 
 // 2. Add Notification
@@ -481,11 +556,18 @@ app.delete('/api/notifications', (req: Request, res: Response) => {
 });
 
 // 3. Sessions Endpoints
-app.post('/api/sessions', (req: Request, res: Response) => {
+app.post('/api/sessions', async (req: Request, res: Response) => {
   const db = loadDB();
   const session = req.body;
   session.id = session.id || ('sess-' + Math.random().toString(36).substring(2, 10));
-  db.sessions.push(session);
+  session.createdAt = session.createdAt || Date.now();
+
+  const existingIdx = db.sessions.findIndex((s: any) => s.id === session.id);
+  if (existingIdx !== -1) {
+    db.sessions[existingIdx] = { ...db.sessions[existingIdx], ...session };
+  } else {
+    db.sessions.unshift(session);
+  }
 
   // Auto upsert customer
   const normKey = (session.name || '').trim().toLowerCase().replace(/\s+/g, ' ');
@@ -512,10 +594,14 @@ app.post('/api/sessions', (req: Request, res: Response) => {
   }
 
   saveDB(db);
+
+  // Sync session to Supabase
+  await syncSessionToSupabase(session);
+
   res.json({ success: true, session, data: db });
 });
 
-app.put('/api/sessions/:id', (req: Request, res: Response) => {
+app.put('/api/sessions/:id', async (req: Request, res: Response) => {
   const db = loadDB();
   const { id } = req.params;
   const index = db.sessions.findIndex((s: any) => s.id === id);
@@ -524,10 +610,14 @@ app.put('/api/sessions/:id', (req: Request, res: Response) => {
   }
   db.sessions[index] = { ...db.sessions[index], ...req.body };
   saveDB(db);
+
+  // Sync session to Supabase
+  await syncSessionToSupabase(db.sessions[index]);
+
   res.json({ success: true, session: db.sessions[index], data: db });
 });
 
-app.post('/api/sessions/:id/end', (req: Request, res: Response) => {
+app.post('/api/sessions/:id/end', async (req: Request, res: Response) => {
   const db = loadDB();
   const { id } = req.params;
   const session = db.sessions.find((s: any) => s.id === id);
@@ -538,14 +628,22 @@ app.post('/api/sessions/:id/end', (req: Request, res: Response) => {
   const now = new Date();
   session.endedAt = `${String(now.getHours()).padStart(2, '0')}:${String(now.getMinutes()).padStart(2, '0')}`;
   saveDB(db);
+
+  // Sync session to Supabase
+  await syncSessionToSupabase(session);
+
   res.json({ success: true, session, data: db });
 });
 
-app.delete('/api/sessions/:id', (req: Request, res: Response) => {
+app.delete('/api/sessions/:id', async (req: Request, res: Response) => {
   const db = loadDB();
   const { id } = req.params;
   db.sessions = db.sessions.filter((s: any) => s.id !== id);
   saveDB(db);
+
+  // Delete session from Supabase
+  await deleteSessionFromSupabase(id);
+
   res.json({ success: true, data: db });
 });
 
@@ -727,7 +825,17 @@ app.post('/api/archive-day', (req: Request, res: Response) => {
   });
 
   const today = new Date().toISOString().split('T')[0];
-  db.history[today] = (db.history[today] || []).concat(db.sessions);
+  db.sessions.forEach((s: any) => {
+    const sDate = (s.date && typeof s.date === 'string' && s.date.trim())
+      ? s.date.split('T')[0]
+      : today;
+    if (!db.history[sDate]) {
+      db.history[sDate] = [];
+    }
+    if (!db.history[sDate].some((existing: any) => existing.id === s.id)) {
+      db.history[sDate].push(s);
+    }
+  });
   const archivedCount = db.sessions.length;
   db.sessions = [];
   saveDB(db);
@@ -763,7 +871,7 @@ async function setupServer() {
     });
     app.use(vite.middlewares);
   } else {
-    const distPath = path.join(__dirname, 'dist');
+    const distPath = path.join(_dirname, 'dist');
     app.use(express.static(distPath));
     app.get('*', (req: Request, res: Response) => {
       res.sendFile(path.join(distPath, 'index.html'));

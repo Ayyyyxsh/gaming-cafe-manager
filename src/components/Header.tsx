@@ -38,7 +38,7 @@ export const Header: React.FC<HeaderProps> = ({
   const unreadCount = notifications.filter(n => !n.read).length;
 
   return (
-    <header className="relative z-20 flex flex-wrap items-center justify-between gap-4 p-4 rounded-2xl border border-[rgba(168,85,247,0.22)] bg-gradient-to-b from-[rgba(36,24,65,0.7)] to-[rgba(19,13,36,0.8)] backdrop-blur-xl shadow-[0_10px_40px_-10px_rgba(124,58,237,0.35)]">
+    <header className="relative z-20 flex flex-wrap items-center justify-between gap-4 p-4 rounded-2xl border border-[rgba(168,85,247,0.25)] bg-gradient-to-b from-[rgba(20,12,38,0.88)] to-[rgba(9,5,18,0.95)] backdrop-blur-2xl shadow-[0_12px_40px_-10px_rgba(0,0,0,0.85),inset_0_1px_0_rgba(255,255,255,0.06)]">
       {/* Brand & Logo */}
       <div className="flex items-center gap-3.5">
         <div className="relative group">
@@ -46,12 +46,12 @@ export const Header: React.FC<HeaderProps> = ({
             src="/logo.jpg"
             alt="OH MY GAME Logo"
             referrerPolicy="no-referrer"
-            className="w-13 h-13 rounded-2xl object-cover border-2 border-red-500/80 shadow-[0_0_0_2px_#08030f,0_0_22px_rgba(239,68,68,0.7),0_0_40px_rgba(233,30,140,0.4)] transition-transform duration-300 group-hover:scale-105"
+            className="w-13 h-13 rounded-2xl object-cover border-2 border-red-500/80 shadow-[0_0_0_2px_#06030c,0_0_20px_rgba(239,68,68,0.7),0_0_35px_rgba(168,85,247,0.35)] transition-transform duration-300 group-hover:scale-105"
           />
         </div>
         <div className="flex flex-col leading-none">
           <div className="flex items-center gap-2">
-            <span className="font-['Exo_2'] font-extrabold text-xl tracking-wider bg-gradient-to-r from-white via-[#e9b6ff] to-[#ff4dab] bg-clip-text text-transparent">
+            <span className="font-['Exo_2'] font-extrabold text-xl tracking-wider bg-gradient-to-r from-white via-[#e2c4ff] to-[#00f2fe] bg-clip-text text-transparent">
               OH MY GAME · NERO
             </span>
             <span
@@ -67,6 +67,14 @@ export const Header: React.FC<HeaderProps> = ({
                 }`}
               />
               {isBackendConnected ? 'ACTIVE' : 'LOCAL CACHE'}
+            </span>
+            <span className="hidden sm:inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-[9px] font-black uppercase tracking-wider border border-cyan-500/35 bg-cyan-950/40 text-cyan-300 shadow-[0_0_10px_rgba(6,182,212,0.25)]">
+              <span className="w-1.5 h-1.5 rounded-full bg-cyan-400 animate-pulse" />
+              CYBER HUD
+            </span>
+            <span className="hidden md:inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-[9px] font-black uppercase tracking-wider border border-purple-500/35 bg-purple-950/40 text-purple-300 shadow-[0_0_10px_rgba(168,85,247,0.25)]" title="Connected to Supabase Project ozzywiqrdczjumdasedw">
+              <span className="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-pulse" />
+              SUPABASE: ozzywiqrdczjumdasedw
             </span>
           </div>
           <span className="text-[#9c8fc6] font-semibold tracking-[0.25em] text-[11px] mt-1 uppercase">
@@ -159,30 +167,19 @@ export const Header: React.FC<HeaderProps> = ({
           )}
         </div>
 
-        {/* Live Clock & Lock Console */}
+        {/* Live Clock */}
         <div className="flex items-center gap-3">
           <div className="flex flex-col items-end leading-none text-right">
-            <span className="font-['Exo_2'] text-xl font-bold tracking-wider text-white">{timeStr}</span>
+            <span className="font-mono text-xl font-bold tracking-wider text-cyan-300 drop-shadow-[0_0_10px_rgba(6,182,212,0.35)]">{timeStr}</span>
             <span className="text-[#9c8fc6] text-[11px] tracking-[0.18em] uppercase mt-1 flex items-center gap-1">
               {userRole === 'admin' ? (
-                <span className="text-red-400 font-bold flex items-center gap-0.5"><ShieldCheck className="w-3 h-3" /> Admin</span>
+                <span className="text-emerald-400 font-bold flex items-center gap-0.5"><ShieldCheck className="w-3 h-3" /> Admin Portal</span>
               ) : (
-                <span className="text-purple-400 font-bold flex items-center gap-0.5"><UserCheck className="w-3 h-3" /> Staff</span>
+                <span className="text-purple-400 font-bold flex items-center gap-0.5"><UserCheck className="w-3 h-3" /> Public Hub</span>
               )}
               • {dateStr}
             </span>
           </div>
-
-          {onLogout && (
-            <button
-              onClick={onLogout}
-              className="p-2.5 rounded-xl border border-red-500/30 bg-red-500/10 text-red-300 hover:bg-red-500 hover:text-white transition-all cursor-pointer flex items-center gap-1.5 font-['Exo_2'] font-bold text-xs uppercase tracking-wider shadow-md hover:shadow-red-500/20"
-              title="Lock Admin Console"
-            >
-              <Lock className="w-4 h-4" />
-              <span className="hidden sm:inline">Lock</span>
-            </button>
-          )}
         </div>
       </div>
     </header>

@@ -1,0 +1,1217 @@
+{
+  "stations": [
+    {
+      "id": "PC1",
+      "name": "PC 1 (Pro)",
+      "kind": "PC",
+      "icon": "ti-device-desktop",
+      "color": "purple",
+      "price30": 30,
+      "price60": 50,
+      "hasMulti": false,
+      "multi30": 0,
+      "multi60": 0
+    },
+    {
+      "id": "PC2",
+      "name": "PC 2 (Pro)",
+      "kind": "PC",
+      "icon": "ti-device-desktop",
+      "color": "purple",
+      "price30": 30,
+      "price60": 50,
+      "hasMulti": false,
+      "multi30": 0,
+      "multi60": 0
+    },
+    {
+      "id": "PC3",
+      "name": "PC 3 (RTX 4080)",
+      "kind": "PC",
+      "icon": "ti-device-desktop",
+      "color": "purple",
+      "price30": 35,
+      "price60": 60,
+      "hasMulti": false,
+      "multi30": 0,
+      "multi60": 0
+    },
+    {
+      "id": "PC4",
+      "name": "PC 4 (RTX 4080)",
+      "kind": "PC",
+      "icon": "ti-device-desktop",
+      "color": "purple",
+      "price30": 35,
+      "price60": 60,
+      "hasMulti": false,
+      "multi30": 0,
+      "multi60": 0
+    },
+    {
+      "id": "PS51",
+      "name": "PS5 Zone 1",
+      "kind": "PS5",
+      "icon": "ti-device-gamepad-2",
+      "color": "violet",
+      "price30": 50,
+      "price60": 90,
+      "hasMulti": true,
+      "multi30": 40,
+      "multi60": 60
+    },
+    {
+      "id": "PS52",
+      "name": "PS5 Zone 2",
+      "kind": "PS5",
+      "icon": "ti-device-gamepad-2",
+      "color": "violet",
+      "price30": 50,
+      "price60": 90,
+      "hasMulti": true,
+      "multi30": 40,
+      "multi60": 60
+    },
+    {
+      "id": "RACE1",
+      "name": "Racing Rig Alpha",
+      "kind": "RACE",
+      "icon": "ti-steering-wheel",
+      "color": "amber",
+      "price30": 60,
+      "price60": 110,
+      "hasMulti": false,
+      "multi30": 0,
+      "multi60": 0
+    },
+    {
+      "id": "VIP1",
+      "name": "VIP PC Suite",
+      "kind": "CUSTOM",
+      "icon": "ti-crown",
+      "color": "cyan",
+      "price30": 70,
+      "price60": 120,
+      "hasMulti": false,
+      "multi30": 0,
+      "multi60": 0
+    }
+  ],
+  "snacks": [
+    {
+      "id": "snk-1",
+      "name": "Cold Coffee",
+      "price": 60,
+      "emoji": "☕"
+    },
+    {
+      "id": "snk-2",
+      "name": "Gamer Energy Drink",
+      "price": 90,
+      "emoji": "⚡"
+    },
+    {
+      "id": "snk-3",
+      "name": "Peri Peri Chips",
+      "price": 30,
+      "emoji": "🍟"
+    },
+    {
+      "id": "snk-4",
+      "name": "Water Bottle 1L",
+      "price": 20,
+      "emoji": "💧"
+    },
+    {
+      "id": "snk-5",
+      "name": "Cheese Burger",
+      "price": 85,
+      "emoji": "🍔"
+    },
+    {
+      "id": "snk-6",
+      "name": "Grilled Sandwich",
+      "price": 65,
+      "emoji": "🥪"
+    },
+    {
+      "id": "snk-7",
+      "name": "Hot Pizza Slice",
+      "price": 95,
+      "emoji": "🍕"
+    },
+    {
+      "id": "snk-8",
+      "name": "Loaded Nachos",
+      "price": 75,
+      "emoji": "🧀"
+    }
+  ],
+  "offers": [
+    {
+      "id": "of-1",
+      "title": "Happy Hour +30m",
+      "desc": "Get 30 mins bonus gaming time on 1hr+ slots",
+      "type": "freetime",
+      "value": 30,
+      "badge": "MOST POPULAR",
+      "emoji": "🎁",
+      "active": true,
+      "createdAt": "2026-08-01"
+    },
+    {
+      "id": "of-2",
+      "title": "Weekend Flat ₹50 Off",
+      "desc": "Flat ₹50 discount on gaming bill above ₹200",
+      "type": "flat",
+      "value": 50,
+      "badge": "WEEKEND DEAL",
+      "emoji": "🔥",
+      "active": true,
+      "createdAt": "2026-08-01"
+    },
+    {
+      "id": "of-3",
+      "title": "15% Student Discount",
+      "desc": "15% off total gaming bill for students",
+      "type": "percent",
+      "value": 15,
+      "badge": "STUDENT SPECIAL",
+      "emoji": "🎓",
+      "active": false,
+      "createdAt": "2026-08-01"
+    }
+  ],
+  "customers": [
+    {
+      "id": "cust-1",
+      "nameKey": "aarav sharma",
+      "name": "Aarav Sharma",
+      "phone": "+91 9876543210",
+      "firstAt": "2026-07-15",
+      "lastAt": "2026-10-18",
+      "sessionCount": 13,
+      "totalSpent": 1500
+    },
+    {
+      "id": "cust-2",
+      "nameKey": "rohan verma",
+      "name": "Rohan Verma",
+      "phone": "+91 9812345678",
+      "firstAt": "2026-07-20",
+      "lastAt": "2026-08-02",
+      "sessionCount": 8,
+      "totalSpent": 920
+    },
+    {
+      "id": "cust-3",
+      "nameKey": "ananya patel",
+      "name": "Ananya Patel",
+      "phone": "+91 9988776655",
+      "firstAt": "2026-07-25",
+      "lastAt": "2026-10-18",
+      "sessionCount": 6,
+      "totalSpent": 740
+    },
+    {
+      "id": "cust-xd0j1s51",
+      "nameKey": "gaurav",
+      "name": "Gaurav",
+      "phone": "",
+      "firstAt": "2026-09-09",
+      "lastAt": "2026-09-09",
+      "sessionCount": 2,
+      "totalSpent": 425
+    },
+    {
+      "id": "cust-tixw9xgg",
+      "nameKey": "shreeya",
+      "name": "shreeya",
+      "phone": "",
+      "firstAt": "2026-10-18",
+      "lastAt": "2026-10-18",
+      "sessionCount": 1,
+      "totalSpent": 50
+    },
+    {
+      "id": "cust-qizqsx2c",
+      "nameKey": "aayush",
+      "name": "AAYUSH",
+      "phone": "2654846888",
+      "firstAt": "2026-10-18",
+      "lastAt": "2026-10-18",
+      "sessionCount": 1,
+      "totalSpent": 130
+    },
+    {
+      "id": "cust-lsvtxrg5",
+      "nameKey": "swar",
+      "name": "SWAR",
+      "phone": "",
+      "firstAt": "2026-10-18",
+      "lastAt": "2026-10-18",
+      "sessionCount": 1,
+      "totalSpent": 110
+    },
+    {
+      "id": "cust-yftew0cb",
+      "nameKey": "raghav",
+      "name": "RAGHAV",
+      "phone": "",
+      "firstAt": "2026-10-18",
+      "lastAt": "2026-10-18",
+      "sessionCount": 1,
+      "totalSpent": 90
+    }
+  ],
+  "sessions": [
+    {
+      "id": "sess-1792327911961-enlpw",
+      "customerId": null,
+      "name": "Aarav Sharma",
+      "phone": "",
+      "stationIds": [
+        "PC1"
+      ],
+      "stationId": "PC1",
+      "mode": null,
+      "players": null,
+      "startTime": "18:22",
+      "endTime": "19:22",
+      "slots": [
+        {
+          "mins": 60
+        }
+      ],
+      "cart": [],
+      "gaming": 50,
+      "snacks": 0,
+      "discount": 0,
+      "total": 50,
+      "offer": null,
+      "pm": "Cash",
+      "cashAmt": 50,
+      "upiAmt": 0,
+      "note": "",
+      "status": "ended",
+      "endedAt": "19:00",
+      "date": "2026-10-18",
+      "createdAt": 1792327911961
+    },
+    {
+      "id": "sess-1792327934093-6yzhb",
+      "customerId": null,
+      "name": "shreeya",
+      "phone": "",
+      "stationIds": [
+        "PC2"
+      ],
+      "stationId": "PC2",
+      "mode": "single",
+      "players": 1,
+      "startTime": "18:22",
+      "endTime": "19:22",
+      "slots": [
+        {
+          "mins": 60
+        }
+      ],
+      "cart": [],
+      "gaming": 50,
+      "snacks": 0,
+      "discount": 0,
+      "total": 50,
+      "offer": null,
+      "pm": "UPI",
+      "cashAmt": 0,
+      "upiAmt": 50,
+      "note": "Converted from booking (Advance: ₹0)",
+      "status": "ended",
+      "endedAt": "13:30",
+      "date": "2026-10-18",
+      "createdAt": 1792327934093
+    },
+    {
+      "id": "sess-1792330278599-qup5b",
+      "customerId": null,
+      "name": "ROCKY",
+      "phone": "",
+      "stationIds": [
+        "PC4"
+      ],
+      "stationId": "PC4",
+      "mode": "single",
+      "players": 1,
+      "startTime": "19:01",
+      "endTime": "20:01",
+      "slots": [
+        {
+          "mins": 60
+        }
+      ],
+      "cart": [],
+      "gaming": 60,
+      "snacks": 0,
+      "discount": 0,
+      "total": 60,
+      "offer": null,
+      "pm": "UPI",
+      "cashAmt": 0,
+      "upiAmt": 60,
+      "note": "Converted from booking (Advance: ₹0)",
+      "status": "ended",
+      "endedAt": "13:31",
+      "date": "2026-10-18",
+      "createdAt": 1792330278599
+    },
+    {
+      "id": "sess-1792333701342-lnwcl",
+      "customerId": null,
+      "name": "JAY",
+      "phone": "",
+      "stationIds": [
+        "PC1"
+      ],
+      "stationId": "PC1",
+      "mode": "single",
+      "players": 1,
+      "startTime": "19:58",
+      "endTime": "20:58",
+      "slots": [
+        {
+          "mins": 60
+        }
+      ],
+      "cart": [],
+      "gaming": 50,
+      "snacks": 0,
+      "discount": 0,
+      "total": 50,
+      "offer": null,
+      "pm": "UPI",
+      "cashAmt": 0,
+      "upiAmt": 50,
+      "note": "Converted from booking (Advance: ₹0)",
+      "status": "ended",
+      "endedAt": "16:10",
+      "date": "2026-10-18",
+      "createdAt": 1792333701342
+    }
+  ],
+  "bookings": [
+    {
+      "id": "bk-q5to5c1h",
+      "name": "shreeya",
+      "phone": "",
+      "date": "2026-10-18",
+      "time": "18:23",
+      "stationIds": [
+        "PC2"
+      ],
+      "stationId": "PC2",
+      "duration": 60,
+      "advance": 0,
+      "notes": "",
+      "status": "converted"
+    },
+    {
+      "id": "bk-oaaq80fr",
+      "name": "AAYUSH",
+      "phone": "2654846888",
+      "date": "2026-10-18",
+      "time": "18:50",
+      "stationIds": [
+        "PS51"
+      ],
+      "stationId": "PS51",
+      "duration": 120,
+      "advance": 50,
+      "notes": "",
+      "status": "converted"
+    },
+    {
+      "id": "bk-k4i0pcj8",
+      "name": "SWAR",
+      "phone": "",
+      "date": "2026-10-18",
+      "time": "18:51",
+      "stationIds": [
+        "RACE1"
+      ],
+      "stationId": "RACE1",
+      "duration": 60,
+      "advance": 0,
+      "notes": "",
+      "status": "converted"
+    },
+    {
+      "id": "bk-a5kzgofa",
+      "name": "RAGHAV",
+      "phone": "",
+      "date": "2026-10-18",
+      "time": "18:55",
+      "stationIds": [
+        "PS52"
+      ],
+      "stationId": "PS52",
+      "duration": 60,
+      "advance": 0,
+      "notes": "",
+      "status": "converted"
+    },
+    {
+      "id": "bk-hjrtbwam",
+      "name": "ROCKY",
+      "phone": "",
+      "date": "2026-10-18",
+      "time": "19:05",
+      "stationIds": [
+        "PC4"
+      ],
+      "stationId": "PC4",
+      "duration": 60,
+      "advance": 0,
+      "notes": "",
+      "status": "converted"
+    },
+    {
+      "id": "bk-zhk0up6t",
+      "name": "JAY",
+      "phone": "",
+      "date": "2026-10-18",
+      "time": "08:00",
+      "stationIds": [
+        "PC1"
+      ],
+      "stationId": "PC1",
+      "duration": 60,
+      "advance": 0,
+      "notes": "",
+      "status": "converted"
+    }
+  ],
+  "history": {
+    "2026-08-02": [
+      {
+        "id": "hist-s1",
+        "name": "Vikram Singh",
+        "phone": "+91 9711223344",
+        "stationIds": [
+          "RACE1"
+        ],
+        "stationId": "RACE1",
+        "startTime": "14:00",
+        "endTime": "15:30",
+        "slots": [
+          {
+            "mins": 90
+          }
+        ],
+        "cart": [
+          {
+            "id": "snk-1",
+            "name": "Cold Coffee",
+            "price": 60,
+            "emoji": "☕",
+            "qty": 1
+          }
+        ],
+        "gaming": 170,
+        "snacks": 60,
+        "discount": 0,
+        "total": 230,
+        "pm": "UPI",
+        "cashAmt": 0,
+        "upiAmt": 230,
+        "note": "F1 2026 Time Trial practice",
+        "status": "ended",
+        "date": "2026-08-02"
+      },
+      {
+        "id": "hist-s2",
+        "name": "Aarav Sharma",
+        "phone": "+91 9876543210",
+        "stationIds": [
+          "PC2"
+        ],
+        "stationId": "PC2",
+        "startTime": "16:00",
+        "endTime": "19:00",
+        "slots": [
+          {
+            "mins": 180
+          }
+        ],
+        "cart": [
+          {
+            "id": "snk-3",
+            "name": "Peri Peri Chips",
+            "price": 30,
+            "emoji": "🍟",
+            "qty": 2
+          }
+        ],
+        "gaming": 150,
+        "snacks": 60,
+        "discount": 0,
+        "total": 210,
+        "pm": "Cash",
+        "cashAmt": 210,
+        "upiAmt": 0,
+        "note": "CS2 competitive grind",
+        "status": "ended",
+        "date": "2026-08-02"
+      }
+    ],
+    "2026-09-04": [
+      {
+        "id": "hist-0904-1",
+        "name": "Karan Malhotra",
+        "phone": "+91 9822334455",
+        "stationIds": [
+          "PS51"
+        ],
+        "stationId": "PS51",
+        "mode": "multi",
+        "players": 2,
+        "startTime": "15:00",
+        "endTime": "17:00",
+        "slots": [
+          {
+            "mins": 120
+          }
+        ],
+        "cart": [
+          {
+            "id": "snk-2",
+            "name": "Gamer Energy Drink",
+            "price": 90,
+            "emoji": "⚡",
+            "qty": 2
+          },
+          {
+            "id": "snk-8",
+            "name": "Loaded Nachos",
+            "price": 75,
+            "emoji": "🧀",
+            "qty": 1
+          }
+        ],
+        "gaming": 200,
+        "snacks": 255,
+        "discount": 30,
+        "total": 425,
+        "pm": "UPI",
+        "cashAmt": 0,
+        "upiAmt": 425,
+        "note": "FIFA tournament duel",
+        "status": "ended",
+        "date": "2026-09-04"
+      }
+    ],
+    "2026-09-05": [
+      {
+        "id": "hist-0905-1",
+        "name": "Arjun Nair",
+        "phone": "+91 9833445566",
+        "stationIds": [
+          "PC3"
+        ],
+        "stationId": "PC3",
+        "startTime": "17:00",
+        "endTime": "20:00",
+        "slots": [
+          {
+            "mins": 180
+          }
+        ],
+        "cart": [
+          {
+            "id": "snk-1",
+            "name": "Cold Coffee",
+            "price": 60,
+            "emoji": "☕",
+            "qty": 2
+          },
+          {
+            "id": "snk-5",
+            "name": "Cheese Burger",
+            "price": 85,
+            "emoji": "🍔",
+            "qty": 1
+          }
+        ],
+        "gaming": 180,
+        "snacks": 205,
+        "discount": 0,
+        "total": 385,
+        "pm": "Cash",
+        "cashAmt": 385,
+        "upiAmt": 0,
+        "note": "Valorant ranked",
+        "status": "ended",
+        "date": "2026-09-05"
+      },
+      {
+        "id": "hist-0905-2",
+        "name": "Dev Mehta",
+        "phone": "+91 9844556677",
+        "stationIds": [
+          "VIP1"
+        ],
+        "stationId": "VIP1",
+        "startTime": "19:30",
+        "endTime": "21:30",
+        "slots": [
+          {
+            "mins": 120
+          }
+        ],
+        "cart": [
+          {
+            "id": "snk-7",
+            "name": "Hot Pizza Slice",
+            "price": 95,
+            "emoji": "🍕",
+            "qty": 2
+          }
+        ],
+        "gaming": 240,
+        "snacks": 190,
+        "discount": 0,
+        "total": 430,
+        "pm": "Split",
+        "cashAmt": 200,
+        "upiAmt": 230,
+        "note": "VIP Suite stream setup",
+        "status": "ended",
+        "date": "2026-09-05"
+      }
+    ],
+    "2026-09-06": [
+      {
+        "id": "hist-0906-1",
+        "name": "Sneha Sen",
+        "phone": "+91 9855667788",
+        "stationIds": [
+          "PC1",
+          "PC2"
+        ],
+        "startTime": "14:00",
+        "endTime": "16:00",
+        "slots": [
+          {
+            "mins": 120
+          }
+        ],
+        "cart": [
+          {
+            "id": "snk-1",
+            "name": "Cold Coffee",
+            "price": 60,
+            "emoji": "☕",
+            "qty": 2
+          },
+          {
+            "id": "snk-3",
+            "name": "Peri Peri Chips",
+            "price": 30,
+            "emoji": "🍟",
+            "qty": 3
+          }
+        ],
+        "gaming": 200,
+        "snacks": 210,
+        "discount": 20,
+        "total": 390,
+        "pm": "UPI",
+        "cashAmt": 0,
+        "upiAmt": 390,
+        "note": "Apex Legends duo squad",
+        "status": "ended",
+        "date": "2026-09-06"
+      }
+    ],
+    "2026-09-07": [
+      {
+        "id": "hist-0907-1",
+        "name": "Rahul Kapoor",
+        "phone": "+91 9866778899",
+        "stationIds": [
+          "RACE1"
+        ],
+        "stationId": "RACE1",
+        "startTime": "16:00",
+        "endTime": "18:00",
+        "slots": [
+          {
+            "mins": 120
+          }
+        ],
+        "cart": [
+          {
+            "id": "snk-2",
+            "name": "Gamer Energy Drink",
+            "price": 90,
+            "emoji": "⚡",
+            "qty": 1
+          },
+          {
+            "id": "snk-6",
+            "name": "Grilled Sandwich",
+            "price": 65,
+            "emoji": "🥪",
+            "qty": 1
+          }
+        ],
+        "gaming": 220,
+        "snacks": 155,
+        "discount": 0,
+        "total": 375,
+        "pm": "Cash",
+        "cashAmt": 375,
+        "upiAmt": 0,
+        "note": "Forza Motorsport cup",
+        "status": "ended",
+        "date": "2026-09-07"
+      }
+    ],
+    "2026-09-08": [
+      {
+        "id": "hist-0908-1",
+        "name": "Tanya Roy",
+        "phone": "+91 9877889900",
+        "stationIds": [
+          "PS52"
+        ],
+        "stationId": "PS52",
+        "startTime": "18:00",
+        "endTime": "20:00",
+        "slots": [
+          {
+            "mins": 120
+          }
+        ],
+        "cart": [
+          {
+            "id": "snk-1",
+            "name": "Cold Coffee",
+            "price": 60,
+            "emoji": "☕",
+            "qty": 1
+          },
+          {
+            "id": "snk-5",
+            "name": "Cheese Burger",
+            "price": 85,
+            "emoji": "🍔",
+            "qty": 1
+          }
+        ],
+        "gaming": 180,
+        "snacks": 145,
+        "discount": 0,
+        "total": 325,
+        "pm": "UPI",
+        "cashAmt": 0,
+        "upiAmt": 325,
+        "note": "Tekken 8 session",
+        "status": "ended",
+        "date": "2026-09-08"
+      }
+    ],
+    "2026-09-09": [
+      {
+        "name": "Gaurav",
+        "phone": "",
+        "stationIds": [
+          "RACE1"
+        ],
+        "stationId": "RACE1",
+        "mode": null,
+        "players": null,
+        "startTime": "18:07",
+        "endTime": "20:07",
+        "slots": [
+          {
+            "mins": 120
+          }
+        ],
+        "cart": [
+          {
+            "id": "snk-5",
+            "name": "Cheese Burger",
+            "price": 85,
+            "emoji": "🍔",
+            "qty": 1
+          }
+        ],
+        "gaming": 220,
+        "snacks": 85,
+        "discount": 0,
+        "total": 305,
+        "offer": null,
+        "pm": "Pending",
+        "cashAmt": 0,
+        "upiAmt": 0,
+        "note": "",
+        "status": "ended",
+        "date": "2026-09-09",
+        "id": "sess-a6ev4jpw",
+        "endedAt": "12:38"
+      }
+    ],
+    "2026-10-18": [
+      {
+        "id": "sess-1792327911961-enlpw",
+        "customerId": null,
+        "name": "Aarav Sharma",
+        "phone": "",
+        "stationIds": [
+          "PC1"
+        ],
+        "stationId": "PC1",
+        "mode": null,
+        "players": null,
+        "startTime": "18:22",
+        "endTime": "19:22",
+        "slots": [
+          {
+            "mins": 60
+          }
+        ],
+        "cart": [],
+        "gaming": 50,
+        "snacks": 0,
+        "discount": 0,
+        "total": 50,
+        "offer": null,
+        "pm": "Cash",
+        "cashAmt": 50,
+        "upiAmt": 0,
+        "note": "",
+        "status": "ended",
+        "endedAt": "19:00",
+        "date": "2026-10-18",
+        "createdAt": 1792327911961
+      },
+      {
+        "id": "sess-1792327934093-6yzhb",
+        "customerId": null,
+        "name": "shreeya",
+        "phone": "",
+        "stationIds": [
+          "PC2"
+        ],
+        "stationId": "PC2",
+        "mode": "single",
+        "players": 1,
+        "startTime": "18:22",
+        "endTime": "19:22",
+        "slots": [
+          {
+            "mins": 60
+          }
+        ],
+        "cart": [],
+        "gaming": 50,
+        "snacks": 0,
+        "discount": 0,
+        "total": 50,
+        "offer": null,
+        "pm": "UPI",
+        "cashAmt": 0,
+        "upiAmt": 50,
+        "note": "Converted from booking (Advance: ₹0)",
+        "status": "ended",
+        "endedAt": "13:30",
+        "date": "2026-10-18",
+        "createdAt": 1792327934093
+      },
+      {
+        "id": "sess-1792330278599-qup5b",
+        "customerId": null,
+        "name": "ROCKY",
+        "phone": "",
+        "stationIds": [
+          "PC4"
+        ],
+        "stationId": "PC4",
+        "mode": "single",
+        "players": 1,
+        "startTime": "19:01",
+        "endTime": "20:01",
+        "slots": [
+          {
+            "mins": 60
+          }
+        ],
+        "cart": [],
+        "gaming": 60,
+        "snacks": 0,
+        "discount": 0,
+        "total": 60,
+        "offer": null,
+        "pm": "UPI",
+        "cashAmt": 0,
+        "upiAmt": 60,
+        "note": "Converted from booking (Advance: ₹0)",
+        "status": "ended",
+        "endedAt": "13:31",
+        "date": "2026-10-18",
+        "createdAt": 1792330278599
+      },
+      {
+        "id": "sess-1792333701342-lnwcl",
+        "customerId": null,
+        "name": "JAY",
+        "phone": "",
+        "stationIds": [
+          "PC1"
+        ],
+        "stationId": "PC1",
+        "mode": "single",
+        "players": 1,
+        "startTime": "19:58",
+        "endTime": "20:58",
+        "slots": [
+          {
+            "mins": 60
+          }
+        ],
+        "cart": [],
+        "gaming": 50,
+        "snacks": 0,
+        "discount": 0,
+        "total": 50,
+        "offer": null,
+        "pm": "UPI",
+        "cashAmt": 0,
+        "upiAmt": 50,
+        "note": "Converted from booking (Advance: ₹0)",
+        "status": "ended",
+        "endedAt": "16:10",
+        "date": "2026-10-18",
+        "createdAt": 1792333701342
+      },
+      {
+        "id": "sess-1792329928201-vl7cl",
+        "name": "RAGHAV",
+        "phone": "",
+        "stationIds": [
+          "PS52"
+        ],
+        "stationId": "PS52",
+        "mode": "single",
+        "players": 1,
+        "startTime": "18:55",
+        "endTime": "19:55",
+        "slots": [
+          {
+            "mins": 60
+          }
+        ],
+        "cart": [],
+        "gaming": 90,
+        "snacks": 0,
+        "discount": 0,
+        "total": 90,
+        "offer": null,
+        "pm": "UPI",
+        "cashAmt": 0,
+        "upiAmt": 90,
+        "note": "Converted from booking (Advance: ₹0)",
+        "status": "ended",
+        "date": "2026-10-18",
+        "createdAt": 1792329928201,
+        "endedAt": "13:25"
+      },
+      {
+        "id": "sess-1792329769192-inkkm",
+        "name": "Ananya Patel",
+        "phone": "",
+        "stationIds": [
+          "PC3"
+        ],
+        "stationId": "PC3",
+        "mode": null,
+        "players": null,
+        "startTime": "18:52",
+        "endTime": "19:52",
+        "slots": [
+          {
+            "mins": 60
+          }
+        ],
+        "cart": [],
+        "gaming": 60,
+        "snacks": 0,
+        "discount": 0,
+        "total": 60,
+        "offer": null,
+        "pm": "UPI",
+        "cashAmt": 0,
+        "upiAmt": 60,
+        "note": "",
+        "status": "ended",
+        "date": "2026-10-18",
+        "createdAt": 1792329769192,
+        "endedAt": "13:23"
+      },
+      {
+        "id": "sess-1792329715762-jwzea",
+        "name": "SWAR",
+        "phone": "",
+        "stationIds": [
+          "RACE1"
+        ],
+        "stationId": "RACE1",
+        "mode": "single",
+        "players": 1,
+        "startTime": "18:51",
+        "endTime": "19:51",
+        "slots": [
+          {
+            "mins": 60
+          }
+        ],
+        "cart": [],
+        "gaming": 110,
+        "snacks": 0,
+        "discount": 0,
+        "total": 110,
+        "offer": null,
+        "pm": "UPI",
+        "cashAmt": 0,
+        "upiAmt": 110,
+        "note": "Converted from booking (Advance: ₹0)",
+        "status": "ended",
+        "date": "2026-10-18",
+        "createdAt": 1792329715762,
+        "endedAt": "13:23"
+      },
+      {
+        "id": "sess-1792329538456-wxop4",
+        "name": "AAYUSH",
+        "phone": "2654846888",
+        "stationIds": [
+          "PS51"
+        ],
+        "stationId": "PS51",
+        "mode": "single",
+        "players": 1,
+        "startTime": "18:48",
+        "endTime": "20:48",
+        "slots": [
+          {
+            "mins": 120
+          }
+        ],
+        "cart": [],
+        "gaming": 180,
+        "snacks": 0,
+        "discount": 50,
+        "total": 130,
+        "offer": null,
+        "pm": "UPI",
+        "cashAmt": 0,
+        "upiAmt": 130,
+        "note": "Converted from booking (Advance: ₹50)",
+        "status": "ended",
+        "date": "2026-10-18",
+        "createdAt": 1792329538456,
+        "endedAt": "13:21"
+      }
+    ]
+  },
+  "notifications": [
+    {
+      "id": "n-stmgt8m",
+      "title": "Session Started",
+      "msg": "RAGHAV started gaming",
+      "kind": "ok",
+      "type": "session-start",
+      "ts": 1792329927388,
+      "read": false
+    },
+    {
+      "id": "n-ofwjblx",
+      "title": "Session Started",
+      "msg": "Ananya Patel started gaming",
+      "kind": "ok",
+      "type": "session-start",
+      "ts": 1792329768372,
+      "read": false
+    },
+    {
+      "id": "n-ifvzcc1",
+      "title": "Session Started",
+      "msg": "SWAR started gaming",
+      "kind": "ok",
+      "type": "session-start",
+      "ts": 1792329714960,
+      "read": false
+    },
+    {
+      "id": "n-bvhl4io",
+      "title": "Session Started",
+      "msg": "AAYUSH started gaming",
+      "kind": "ok",
+      "type": "session-start",
+      "ts": 1792329537658,
+      "read": false
+    },
+    {
+      "id": "n-nnz2phh",
+      "title": "Session Started",
+      "msg": "shreeya started gaming",
+      "kind": "ok",
+      "type": "session-start",
+      "ts": 1792327933235,
+      "read": false
+    },
+    {
+      "id": "n-ts0f0en",
+      "title": "Session Started",
+      "msg": "Aarav Sharma started gaming",
+      "kind": "ok",
+      "type": "session-start",
+      "ts": 1792327911263,
+      "read": false
+    },
+    {
+      "id": "n-lfh9lhk",
+      "title": "Session Started",
+      "msg": "Gaurav started gaming",
+      "kind": "ok",
+      "type": "session-start",
+      "ts": 1788959435268,
+      "read": false
+    },
+    {
+      "id": "n-db8cwjr",
+      "title": "Session Started",
+      "msg": "Gaurav started gaming",
+      "kind": "ok",
+      "type": "session-start",
+      "ts": 1788957466982,
+      "read": false
+    },
+    {
+      "id": "notif-boot",
+      "title": "Server Active",
+      "msg": "Gaming Cafe Backend Server loaded and ready.",
+      "kind": "ok",
+      "type": "system",
+      "ts": 1788957448251,
+      "read": false
+    }
+  ],
+  "adminAccount": {
+    "id": "admin-938qv4q",
+    "name": "Aayush Kumar",
+    "username": "aayushkmr419@gmail.com",
+    "passwordHash": "9cc0c36bb71c55be8d564f0b5c9093d11115e6100f3989d36482f0a06432ce40",
+    "createdAt": "2026-10-18T13:17:23.731Z"
+  }
+}

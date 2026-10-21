@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { X, Save, FileText } from 'lucide-react';
+import { X, Save, FileText, GraduationCap } from 'lucide-react';
 import { Session, Station, Customer } from '../types';
 import { addMin, diffMin, slotPriceForStation, fmtMins, escapeHtml } from '../utils/helpers';
 
@@ -30,8 +30,6 @@ export const EditModal: React.FC<EditModalProps> = ({
   onDeleteCustomerProfile,
   toast
 }) => {
-  if (!isOpen) return null;
-
   // Session Edit State
   const [name, setName] = useState('');
   const [phone, setPhone] = useState('');
@@ -43,6 +41,7 @@ export const EditModal: React.FC<EditModalProps> = ({
   const [players, setPlayers] = useState<number>(2);
   const [gaming, setGaming] = useState<number>(0);
   const [snacks, setSnacks] = useState<number>(0);
+  const [discount, setDiscount] = useState<number>(0);
   const [pm, setPm] = useState<'Cash' | 'UPI' | 'Split' | 'Pending'>('Cash');
   const [cashAmt, setCashAmt] = useState<number>(0);
   const [upiAmt, setUpiAmt] = useState<number>(0);
@@ -61,6 +60,7 @@ export const EditModal: React.FC<EditModalProps> = ({
       setPlayers(sessionToEdit.players || 2);
       setGaming(sessionToEdit.gaming || 0);
       setSnacks(sessionToEdit.snacks || 0);
+      setDiscount(sessionToEdit.discount || 0);
       setPm(sessionToEdit.pm || 'Cash');
       setCashAmt(sessionToEdit.cashAmt || 0);
       setUpiAmt(sessionToEdit.upiAmt || 0);
@@ -84,7 +84,8 @@ export const EditModal: React.FC<EditModalProps> = ({
       return;
     }
 
-    const total = gaming + snacks;
+    const subtotal = gaming + snacks;
+    const total = Math.max(0, subtotal - discount);
     let finalCash = 0;
     let finalUpi = 0;
 
@@ -116,6 +117,7 @@ export const EditModal: React.FC<EditModalProps> = ({
         players: mode === 'multi' ? players : null,
         gaming,
         snacks,
+        discount,
         total,
         pm,
         cashAmt: finalCash,
@@ -128,6 +130,13 @@ export const EditModal: React.FC<EditModalProps> = ({
     toast('Session updated successfully', 'ok');
     onClose();
   };
+
+  if (!isOpen) return null;
+
+  const subtotal = gaming + snacks;
+  const isEligible = subtotal >= 500;
+  const student15 = Math.round(subtotal * 0.15);
+  const isStudentApplied = discount > 0;
 
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/80 backdrop-blur-md animate-fadeIn">
@@ -335,6 +344,50 @@ export const EditModal: React.FC<EditModalProps> = ({
                   onChange={e => setSnacks(Number(e.target.value) || 0)}
                   className="w-full bg-black/60 border border-[rgba(168,85,247,0.22)] rounded-lg p-2 text-xs text-white outline-none"
                 />
+              </div>
+            </div>
+
+            {/* Student Discount (15% on bill of 500) */}
+            <div className="p-2.5 rounded-xl border border-purple-500/25 bg-black/40 flex flex-col gap-1.5">
+              <div className="flex items-center justify-between">
+                <div className="flex items-center gap-1.5">
+                  <GraduationCap className="w-4 h-4 text-pink-400" />
+                  <span className="text-[11px] font-bold text-white">Student Discount (15% OFF)</span>
+                  <span className={`text-[9px] px-1.5 py-0.5 rounded font-black uppercase ${
+                    isEligible ? 'bg-emerald-500/20 text-emerald-300 border border-emerald-500/30' : 'bg-amber-500/20 text-amber-300'
+                  }`}>
+                    {isEligible ? 'Bill ₹500+ Qualified' : 'Bill ₹500+ Only'}
+                  </span>
+                </div>
+                {isEligible ? (
+                  <button
+                    type="button"
+                    onClick={() => {
+                      if (isStudentApplied) {
+                        setDiscount(0);
+                      } else {
+                        setDiscount(student15);
+                      }
+                    }}
+                    className={`px-2.5 py-1 rounded-lg text-[10px] font-black uppercase transition-all border cursor-pointer ${
+                      isStudentApplied
+                        ? 'bg-emerald-500/20 border-emerald-500 text-emerald-300 shadow'
+                        : 'bg-purple-950/50 border-purple-500/40 text-purple-200 hover:border-pink-500'
+                    }`}
+                  >
+                    {isStudentApplied ? `✓ Applied (-₹${discount})` : `Apply 15% (-₹${student15})`}
+                  </button>
+                ) : (
+                  <span className="text-[10px] text-[#9c8fc6] italic">
+                    Min bill ₹500 (Current: ₹{subtotal})
+                  </span>
+                )}
+              </div>
+              <div className="flex items-center justify-between text-xs pt-1 border-t border-white/5">
+                <span className="text-[#9c8fc6]">Net Payable Bill:</span>
+                <span className="font-['Exo_2'] font-black text-sm text-emerald-300">
+                  ₹{Math.max(0, subtotal - discount)}
+                </span>
               </div>
             </div>
 

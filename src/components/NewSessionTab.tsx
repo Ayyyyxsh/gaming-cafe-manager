@@ -14,20 +14,22 @@ import {
   Users,
   Check,
   Split,
-  FileText
+  FileText,
+  GraduationCap
 } from 'lucide-react';
 import { Station, SnackItem, Offer, Customer, Session, CartItem, Slot } from '../types';
 import { nowHHMM, addMin, slotPriceForStation, fmtMins, to12, normKey, todayISO } from '../utils/helpers';
-import { processRazorpayPayment } from '../lib/razorpay';
 
 interface NewSessionTabProps {
   stations: Station[];
   snacks: SnackItem[];
-  offers: Offer[];
+  offers?: Offer[];
   customers: Customer[];
   activeSessions: Session[];
   onStartSession: (sessionData: Partial<Session>) => void;
   toast: (msg: string, kind?: 'ok' | 'warn' | 'info') => void;
+  preSelectedStationId?: string | null;
+  onClearPreSelectedStation?: () => void;
 }
 
 const SLOT_CHIPS = [30, 60, 90, 120, 180];
@@ -40,21 +42,35 @@ export const NewSessionTab: React.FC<NewSessionTabProps> = ({
   customers,
   activeSessions,
   onStartSession,
-  toast
+  toast,
+  preSelectedStationId,
+  onClearPreSelectedStation
 }) => {
   const [name, setName] = useState('');
   const [phone, setPhone] = useState('');
   const [startTime, setStartTime] = useState(nowHHMM());
-  const [selectedStationIds, setSelectedStationIds] = useState<string[]>([]);
+  const [selectedStationIds, setSelectedStationIds] = useState<string[]>(() => {
+    return preSelectedStationId ? [preSelectedStationId] : [];
+  });
   const [mode, setMode] = useState<'single' | 'multi'>('single');
   const [players, setPlayers] = useState<number>(2);
   const [slots, setSlots] = useState<Slot[]>([{ mins: 30 }]);
   const [cart, setCart] = useState<CartItem[]>([]);
-  const [selectedOfferId, setSelectedOfferId] = useState<string | null>(null);
-  const [pm, setPm] = useState<'Cash' | 'UPI' | 'Razorpay' | 'Split' | 'Pending'>('Cash');
+  const [studentDiscountActive, setStudentDiscountActive] = useState<boolean>(false);
+  const [pm, setPm] = useState<'Cash' | 'UPI' | 'Split' | 'Pending'>('Cash');
   const [cashAmt, setCashAmt] = useState<number>(0);
   const [upiAmt, setUpiAmt] = useState<number>(0);
   const [note, setNote] = useState('');
+
+  // Sync preSelectedStationId if it changes
+  React.useEffect(() => {
+    if (preSelectedStationId) {
+      setSelectedStationIds([preSelectedStationId]);
+      if (onClearPreSelectedStation) {
+        onClearPreSelectedStation();
+      }
+    }
+  }, [preSelectedStationId, onClearPreSelectedStation]);
 
   // Busy station IDs
   const busyStationIds = new Set<string>();
@@ -126,25 +142,15 @@ export const NewSessionTab: React.FC<NewSessionTabProps> = ({
   }, 0);
 
   const snacksTotal = cart.reduce((s, c) => s + c.price * c.qty, 0);
+  const subtotal = gamingTotal + snacksTotal;
 
-  const activeOffer = offers.find(o => o.id === selectedOfferId && o.active);
-  let offerDiscount = 0;
-  if (activeOffer) {
-    if (activeOffer.type === 'flat') offerDiscount = Math.min(activeOffer.value || 0, gamingTotal);
-    else if (activeOffer.type === 'percent')
-      offerDiscount = Math.round((gamingTotal * Math.min(activeOffer.value || 0, 100)) / 100);
-    else if (activeOffer.type === 'freetime') {
-      const freeMins = activeOffer.value || 0;
-      let d = 0;
-      selectedStationIds.forEach(sid => {
-        const st = stations.find(s => s.id === sid);
-        if (st) d += slotPriceForStation(st, mode, players, freeMins);
-      });
-      offerDiscount = Math.min(d, gamingTotal);
-    }
-  }
+  // Student Discount: 15% discount on bill of 500 or more
+  const isStudentEligible = subtotal >= 500;
+  const studentDiscount = (studentDiscountActive && isStudentEligible)
+    ? Math.round(subtotal * 0.15)
+    : 0;
 
-  const grandTotal = Math.max(0, gamingTotal + snacksTotal - offerDiscount);
+  const grandTotal = Math.max(0, subtotal - studentDiscount);
 
   const handleStart = async () => {
     if (!name.trim()) {
@@ -167,15 +173,14 @@ export const NewSessionTab: React.FC<NewSessionTabProps> = ({
       }
     }
 
-    const freeMins = activeOffer && activeOffer.type === 'freetime' ? activeOffer.value || 0 : 0;
-    const totalMins = slots.reduce((a, b) => a + b.mins, 0) + freeMins;
+    const totalMins = slots.reduce((a, b) => a + b.mins, 0);
     const start = startTime || nowHHMM();
     const end = addMin(start, totalMins);
 
     let finalCash = 0;
     let finalUpi = 0;
     if (pm === 'Cash') finalCash = grandTotal;
-    else if (pm === 'UPI' || pm === 'Razorpay') finalUpi = grandTotal;
+    else if (pm === 'UPI') finalUpi = grandTotal;
     else if (pm === 'Split') {
       finalCash = cashAmt;
       finalUpi = upiAmt;
@@ -184,6 +189,13 @@ export const NewSessionTab: React.FC<NewSessionTabProps> = ({
     const anyMulti = selectedStationIds.some(id => stations.find(s => s.id === id)?.hasMulti);
 
     const submitSessionData = (finalNote: string) => {
+      let combinedNote = finalNote;
+      if (studentDiscountActive && studentDiscount > 0) {
+        combinedNote = combinedNote
+          ? `${combinedNote} • Student Discount 15% (-₹${studentDiscount})`
+          : `Student Discount 15% (-₹${studentDiscount})`;
+      }
+
       onStartSession({
         name: name.trim(),
         phone: phone.trim(),
@@ -197,15 +209,16 @@ export const NewSessionTab: React.FC<NewSessionTabProps> = ({
         cart: cart.map(c => ({ ...c })),
         gaming: gamingTotal,
         snacks: snacksTotal,
-        discount: offerDiscount,
+        discount: studentDiscount,
         total: grandTotal,
-        offer: activeOffer ? { id: activeOffer.id, title: activeOffer.title, type: activeOffer.type, value: activeOffer.value, freeMins } : null,
+        offer: null,
         pm,
         cashAmt: finalCash,
         upiAmt: finalUpi,
-        note: finalNote,
+        note: combinedNote,
         status: 'active',
-        date: todayISO()
+        date: todayISO(),
+        createdAt: Date.now()
       });
 
       // Reset Form
@@ -215,33 +228,14 @@ export const NewSessionTab: React.FC<NewSessionTabProps> = ({
       setSelectedStationIds([]);
       setSlots([{ mins: 30 }]);
       setCart([]);
-      setSelectedOfferId(null);
+      setStudentDiscountActive(false);
       setPm('Cash');
       setCashAmt(0);
       setUpiAmt(0);
       setNote('');
     };
 
-    if (pm === 'Razorpay' && grandTotal > 0) {
-      toast(`Opening Razorpay Checkout for ₹${grandTotal}...`, 'info');
-      await processRazorpayPayment({
-        amount: grandTotal,
-        name: 'OH MY GAME · NERO',
-        description: `Gaming Session for ${name.trim()}`,
-        customerName: name.trim(),
-        customerPhone: phone.trim(),
-        onSuccess: (paymentId) => {
-          const razorpayNote = `${note.trim() ? note.trim() + ' | ' : ''}[Paid via Razorpay ID: ${paymentId}]`.trim();
-          submitSessionData(razorpayNote);
-          toast(`Payment of ₹${grandTotal} verified! Gaming session started.`, 'ok');
-        },
-        onFailure: (err) => {
-          toast(err?.message || 'Razorpay payment cancelled or failed', 'warn');
-        }
-      });
-    } else {
-      submitSessionData(note.trim());
-    }
+    submitSessionData(note.trim());
   };
 
   return (
@@ -549,59 +543,74 @@ export const NewSessionTab: React.FC<NewSessionTabProps> = ({
           )}
         </div>
 
-        {/* Offers & Coupons */}
-        {offers.length > 0 && (
-          <div className="p-4 rounded-2xl border border-[rgba(168,85,247,0.22)] bg-gradient-to-b from-[rgba(36,24,65,0.55)] to-[rgba(19,13,36,0.7)] backdrop-blur-md">
-            <h3 className="text-xs uppercase tracking-[0.22em] text-[#9c8fc6] font-extrabold flex items-center gap-2 mb-3">
-              <Gift className="w-4 h-4 text-[#ff4dab]" /> Apply Promotional Offer
-            </h3>
-
-            <div className="flex flex-col gap-2">
-              {offers.filter(o => o.active).map(of => {
-                const isSelected = selectedOfferId === of.id;
-                return (
-                  <div
-                    key={of.id}
-                    onClick={() => setSelectedOfferId(isSelected ? null : of.id)}
-                    className={`p-2.5 rounded-xl border flex items-center gap-3 cursor-pointer transition-all ${
-                      isSelected
-                        ? 'border-[#e91e8c] bg-gradient-to-r from-purple-900/40 to-pink-900/40 shadow-[0_0_0_1px_rgba(233,30,140,0.4)]'
-                        : 'border-[rgba(168,85,247,0.2)] bg-[rgba(8,3,15,0.55)] hover:border-pink-500/50'
-                    }`}
-                  >
-                    <span className="text-xl">{of.emoji || '🎁'}</span>
-                    <div className="flex-1 min-w-0">
-                      <div className="font-bold text-xs text-white flex items-center gap-2">
-                        {of.title}
-                        {of.badge && (
-                          <span className="px-1.5 py-0.5 rounded-full bg-pink-500/20 text-pink-300 text-[9px] font-extrabold border border-pink-500/30">
-                            {of.badge}
-                          </span>
-                        )}
-                      </div>
-                      <div className="text-[11px] text-[#9c8fc6] truncate">{of.desc}</div>
-                    </div>
-                    <span className="font-['Exo_2'] font-bold text-xs text-[#ff4dab]">
-                      {of.type === 'flat'
-                        ? `₹${of.value} OFF`
-                        : of.type === 'percent'
-                        ? `${of.value}% OFF`
-                        : of.type === 'freetime'
-                        ? `+${of.value}m FREE`
-                        : 'Manual'}
-                    </span>
-                  </div>
-                );
-              })}
-            </div>
-          </div>
-        )}
-
         {/* Payment & Session Note */}
         <div className="p-4 rounded-2xl border border-[rgba(168,85,247,0.22)] bg-gradient-to-b from-[rgba(36,24,65,0.55)] to-[rgba(19,13,36,0.7)] backdrop-blur-md flex flex-col gap-3">
-          <h3 className="text-xs uppercase tracking-[0.22em] text-[#9c8fc6] font-extrabold flex items-center gap-2">
-            <CreditCard className="w-4 h-4 text-[#ff4dab]" /> Payment & Confirmation
-          </h3>
+          <div className="flex items-center justify-between">
+            <h3 className="text-xs uppercase tracking-[0.22em] text-[#9c8fc6] font-extrabold flex items-center gap-2">
+              <CreditCard className="w-4 h-4 text-[#ff4dab]" /> Payment & Confirmation
+            </h3>
+            <span className="text-[11px] font-mono text-[#9c8fc6]">
+              Subtotal: <strong className="text-white">₹{subtotal}</strong>
+            </span>
+          </div>
+
+          {/* Student Discount Option (15% on bill of 500) */}
+          <div
+            onClick={() => {
+              if (!isStudentEligible && !studentDiscountActive) {
+                toast(`Student discount requires a minimum bill of ₹500 (Current bill: ₹${subtotal})`, 'warn');
+                return;
+              }
+              setStudentDiscountActive(!studentDiscountActive);
+            }}
+            className={`p-3 rounded-xl border transition-all cursor-pointer select-none flex items-center justify-between gap-3 ${
+              studentDiscountActive && isStudentEligible
+                ? 'border-emerald-500/80 bg-gradient-to-r from-emerald-950/40 via-purple-950/40 to-pink-950/30 shadow-[0_0_15px_rgba(16,185,129,0.2)]'
+                : isStudentEligible
+                ? 'border-purple-500/40 bg-purple-950/20 hover:border-pink-500/60 hover:bg-purple-900/30'
+                : 'border-white/10 bg-black/30 opacity-75 hover:opacity-100 hover:border-white/20'
+            }`}
+          >
+            <div className="flex items-center gap-2.5">
+              <div className={`p-2 rounded-lg border ${
+                studentDiscountActive && isStudentEligible
+                  ? 'bg-emerald-500/20 text-emerald-400 border-emerald-500/40'
+                  : 'bg-purple-900/30 text-purple-300 border-purple-500/30'
+              }`}>
+                <GraduationCap className="w-4 h-4" />
+              </div>
+              <div>
+                <div className="flex items-center gap-2">
+                  <span className="font-extrabold text-xs text-white">Student Discount (15% OFF)</span>
+                  <span className={`px-1.5 py-0.5 rounded text-[9px] font-black uppercase tracking-wider border ${
+                    isStudentEligible
+                      ? 'bg-emerald-500/20 text-emerald-300 border-emerald-500/40'
+                      : 'bg-amber-500/20 text-amber-300 border-amber-500/40'
+                  }`}>
+                    {isStudentEligible ? 'Bill ₹500+ Qualified' : 'Bill ₹500+ Only'}
+                  </span>
+                </div>
+                <div className="text-[11px] text-[#9c8fc6] mt-0.5">
+                  {isStudentEligible
+                    ? studentDiscountActive
+                      ? `✓ 15% discount applied! You save ₹${studentDiscount} on this bill`
+                      : `Bill is ₹${subtotal} (≥ ₹500). Click to apply 15% discount (-₹${Math.round(subtotal * 0.15)})`
+                    : `Add ₹${500 - subtotal} more to bill to qualify (Current: ₹${subtotal})`
+                  }
+                </div>
+              </div>
+            </div>
+
+            <div className="flex items-center gap-2">
+              <div className={`w-6 h-6 rounded-lg flex items-center justify-center border transition-all ${
+                studentDiscountActive && isStudentEligible
+                  ? 'bg-emerald-500 border-emerald-400 text-black font-bold shadow'
+                  : 'border-white/20 bg-black/40 text-transparent'
+              }`}>
+                <Check className="w-3.5 h-3.5 stroke-[3]" />
+              </div>
+            </div>
+          </div>
 
           <div className="p-3 rounded-xl border border-[rgba(168,85,247,0.2)] bg-[rgba(8,3,15,0.45)] flex flex-col gap-1.5">
             <div className="flex justify-between text-xs text-[#9c8fc6]">
@@ -612,10 +621,12 @@ export const NewSessionTab: React.FC<NewSessionTabProps> = ({
               <span>Snacks Order</span>
               <span className="font-bold text-white">₹{snacksTotal}</span>
             </div>
-            {offerDiscount > 0 && (
+            {studentDiscount > 0 && (
               <div className="flex justify-between text-xs text-emerald-400 font-bold">
-                <span>Offer Discount</span>
-                <span>-₹{offerDiscount}</span>
+                <span className="flex items-center gap-1">
+                  <GraduationCap className="w-3.5 h-3.5" /> Student Discount (15%)
+                </span>
+                <span>-₹{studentDiscount}</span>
               </div>
             )}
             <div className="flex justify-between text-lg font-['Exo_2'] font-extrabold text-white border-t border-dashed border-[rgba(168,85,247,0.2)] pt-2 mt-1">
@@ -628,8 +639,8 @@ export const NewSessionTab: React.FC<NewSessionTabProps> = ({
 
           <div className="flex flex-col gap-1.5">
             <label className="text-[11px] uppercase tracking-wider text-[#9c8fc6] font-bold">Payment Mode</label>
-            <div className="grid grid-cols-2 sm:grid-cols-5 gap-1.5">
-              {(['Cash', 'UPI', 'Razorpay', 'Split', 'Pending'] as const).map(modeOpt => (
+            <div className="grid grid-cols-2 sm:grid-cols-4 gap-1.5">
+              {(['Cash', 'UPI', 'Split', 'Pending'] as const).map(modeOpt => (
                 <button
                   key={modeOpt}
                   type="button"
@@ -640,15 +651,12 @@ export const NewSessionTab: React.FC<NewSessionTabProps> = ({
                         ? 'border-emerald-500 bg-emerald-500/20 text-emerald-300 shadow'
                         : modeOpt === 'UPI'
                         ? 'border-sky-500 bg-sky-500/20 text-sky-300 shadow'
-                        : modeOpt === 'Razorpay'
-                        ? 'border-blue-500 bg-blue-500/25 text-blue-300 shadow-[0_0_12px_rgba(59,130,246,0.4)]'
                         : modeOpt === 'Split'
                         ? 'border-pink-500 bg-pink-500/20 text-pink-300 shadow'
                         : 'border-amber-500 bg-amber-500/20 text-amber-300 shadow animate-pulse'
                       : 'border-[rgba(168,85,247,0.2)] bg-[rgba(8,3,15,0.6)] text-[#ece6ff] hover:border-pink-500/50'
                   }`}
                 >
-                  {modeOpt === 'Razorpay' && <CreditCard className="w-3.5 h-3.5 text-blue-400" />}
                   {modeOpt === 'Split' && <Split className="w-3.5 h-3.5" />}
                   {modeOpt}
                 </button>
@@ -736,6 +744,10 @@ export const NewSessionTab: React.FC<NewSessionTabProps> = ({
           >
             <Play className="w-4 h-4 fill-current" /> Start Session Now
           </button>
+          <div className="flex items-center justify-center gap-1.5 text-[10px] text-[#9c8fc6] pt-1">
+            <span className="w-1.5 h-1.5 rounded-full bg-emerald-400" />
+            <span>Auto-synced to Supabase Cloud (<code className="text-emerald-300 font-mono">ozzywiqrdczjumdasedw</code>)</span>
+          </div>
         </div>
       </div>
 

@@ -5,11 +5,11 @@ const API_BASE = '/api';
 export async function fetchAppData(): Promise<AppData | null> {
   try {
     const res = await fetch(`${API_BASE}/data`);
-    if (!res.ok) throw new Error('Failed to fetch app data');
+    if (!res.ok) throw new Error(`HTTP error ${res.status}`);
     const json = await res.json();
-    return json.data;
+    return json.data || null;
   } catch (err) {
-    console.error('API fetch error:', err);
+    console.warn('Backend API sync offline/paused:', err);
     return null;
   }
 }
@@ -21,11 +21,11 @@ export async function createSessionAPI(session: Partial<Session>): Promise<AppDa
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify(session)
     });
-    if (!res.ok) throw new Error('Failed to create session');
+    if (!res.ok) throw new Error(`HTTP error ${res.status}`);
     const json = await res.json();
-    return json.data;
+    return json.data || null;
   } catch (err) {
-    console.error('API create session error:', err);
+    console.warn('API create session notice:', err);
     return null;
   }
 }
@@ -37,11 +37,11 @@ export async function updateSessionAPI(id: string, updates: Partial<Session>): P
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify(updates)
     });
-    if (!res.ok) throw new Error('Failed to update session');
+    if (!res.ok) throw new Error(`HTTP error ${res.status}`);
     const json = await res.json();
-    return json.data;
+    return json.data || null;
   } catch (err) {
-    console.error('API update session error:', err);
+    console.warn('API update session notice:', err);
     return null;
   }
 }
@@ -51,11 +51,11 @@ export async function endSessionAPI(id: string): Promise<AppData | null> {
     const res = await fetch(`${API_BASE}/sessions/${id}/end`, {
       method: 'POST'
     });
-    if (!res.ok) throw new Error('Failed to end session');
+    if (!res.ok) throw new Error(`HTTP error ${res.status}`);
     const json = await res.json();
-    return json.data;
+    return json.data || null;
   } catch (err) {
-    console.error('API end session error:', err);
+    console.warn('API end session notice:', err);
     return null;
   }
 }
@@ -65,11 +65,11 @@ export async function deleteSessionAPI(id: string): Promise<AppData | null> {
     const res = await fetch(`${API_BASE}/sessions/${id}`, {
       method: 'DELETE'
     });
-    if (!res.ok) throw new Error('Failed to delete session');
+    if (!res.ok) throw new Error(`HTTP error ${res.status}`);
     const json = await res.json();
-    return json.data;
+    return json.data || null;
   } catch (err) {
-    console.error('API delete session error:', err);
+    console.warn('API delete session notice:', err);
     return null;
   }
 }
@@ -81,11 +81,11 @@ export async function createBookingAPI(booking: Partial<Booking>): Promise<AppDa
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify(booking)
     });
-    if (!res.ok) throw new Error('Failed to create booking');
+    if (!res.ok) throw new Error(`HTTP error ${res.status}`);
     const json = await res.json();
-    return json.data;
+    return json.data || null;
   } catch (err) {
-    console.error('API create booking error:', err);
+    console.warn('API create booking notice:', err);
     return null;
   }
 }
@@ -97,11 +97,11 @@ export async function updateBookingAPI(id: string, updates: Partial<Booking>): P
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify(updates)
     });
-    if (!res.ok) throw new Error('Failed to update booking');
+    if (!res.ok) throw new Error(`HTTP error ${res.status}`);
     const json = await res.json();
-    return json.data;
+    return json.data || null;
   } catch (err) {
-    console.error('API update booking error:', err);
+    console.warn('API update booking notice:', err);
     return null;
   }
 }
@@ -111,11 +111,11 @@ export async function deleteBookingAPI(id: string): Promise<AppData | null> {
     const res = await fetch(`${API_BASE}/bookings/${id}`, {
       method: 'DELETE'
     });
-    if (!res.ok) throw new Error('Failed to delete booking');
+    if (!res.ok) throw new Error(`HTTP error ${res.status}`);
     const json = await res.json();
-    return json.data;
+    return json.data || null;
   } catch (err) {
-    console.error('API delete booking error:', err);
+    console.warn('API delete booking notice:', err);
     return null;
   }
 }
@@ -127,11 +127,11 @@ export async function createSnackAPI(snack: Partial<SnackItem>): Promise<AppData
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify(snack)
     });
-    if (!res.ok) throw new Error('Failed to create snack');
+    if (!res.ok) throw new Error(`HTTP error ${res.status}`);
     const json = await res.json();
-    return json.data;
+    return json.data || null;
   } catch (err) {
-    console.error('API create snack error:', err);
+    console.warn('API create snack notice:', err);
     return null;
   }
 }
@@ -141,11 +141,11 @@ export async function deleteSnackAPI(id: string): Promise<AppData | null> {
     const res = await fetch(`${API_BASE}/snacks/${id}`, {
       method: 'DELETE'
     });
-    if (!res.ok) throw new Error('Failed to delete snack');
+    if (!res.ok) throw new Error(`HTTP error ${res.status}`);
     const json = await res.json();
-    return json.data;
+    return json.data || null;
   } catch (err) {
-    console.error('API delete snack error:', err);
+    console.warn('API delete snack notice:', err);
     return null;
   }
 }
@@ -157,11 +157,11 @@ export async function createOfferAPI(offer: Partial<Offer>): Promise<AppData | n
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify(offer)
     });
-    if (!res.ok) throw new Error('Failed to create offer');
+    if (!res.ok) throw new Error(`HTTP error ${res.status}`);
     const json = await res.json();
-    return json.data;
+    return json.data || null;
   } catch (err) {
-    console.error('API create offer error:', err);
+    console.warn('API create offer notice:', err);
     return null;
   }
 }
@@ -173,11 +173,11 @@ export async function updateOfferAPI(id: string, updates: Partial<Offer>): Promi
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify(updates)
     });
-    if (!res.ok) throw new Error('Failed to update offer');
+    if (!res.ok) throw new Error(`HTTP error ${res.status}`);
     const json = await res.json();
-    return json.data;
+    return json.data || null;
   } catch (err) {
-    console.error('API update offer error:', err);
+    console.warn('API update offer notice:', err);
     return null;
   }
 }
@@ -187,11 +187,11 @@ export async function deleteOfferAPI(id: string): Promise<AppData | null> {
     const res = await fetch(`${API_BASE}/offers/${id}`, {
       method: 'DELETE'
     });
-    if (!res.ok) throw new Error('Failed to delete offer');
+    if (!res.ok) throw new Error(`HTTP error ${res.status}`);
     const json = await res.json();
-    return json.data;
+    return json.data || null;
   } catch (err) {
-    console.error('API delete offer error:', err);
+    console.warn('API delete offer notice:', err);
     return null;
   }
 }
@@ -203,11 +203,11 @@ export async function createStationAPI(station: Partial<Station>): Promise<AppDa
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify(station)
     });
-    if (!res.ok) throw new Error('Failed to create station');
+    if (!res.ok) throw new Error(`HTTP error ${res.status}`);
     const json = await res.json();
-    return json.data;
+    return json.data || null;
   } catch (err) {
-    console.error('API create station error:', err);
+    console.warn('API create station notice:', err);
     return null;
   }
 }
@@ -219,11 +219,11 @@ export async function updateStationAPI(id: string, updates: Partial<Station>): P
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify(updates)
     });
-    if (!res.ok) throw new Error('Failed to update station');
+    if (!res.ok) throw new Error(`HTTP error ${res.status}`);
     const json = await res.json();
-    return json.data;
+    return json.data || null;
   } catch (err) {
-    console.error('API update station error:', err);
+    console.warn('API update station notice:', err);
     return null;
   }
 }
@@ -233,11 +233,11 @@ export async function deleteStationAPI(id: string): Promise<AppData | null> {
     const res = await fetch(`${API_BASE}/stations/${id}`, {
       method: 'DELETE'
     });
-    if (!res.ok) throw new Error('Failed to delete station');
+    if (!res.ok) throw new Error(`HTTP error ${res.status}`);
     const json = await res.json();
-    return json.data;
+    return json.data || null;
   } catch (err) {
-    console.error('API delete station error:', err);
+    console.warn('API delete station notice:', err);
     return null;
   }
 }
@@ -247,11 +247,11 @@ export async function deleteCustomerAPI(id: string): Promise<AppData | null> {
     const res = await fetch(`${API_BASE}/customers/${id}`, {
       method: 'DELETE'
     });
-    if (!res.ok) throw new Error('Failed to delete customer');
+    if (!res.ok) throw new Error(`HTTP error ${res.status}`);
     const json = await res.json();
-    return json.data;
+    return json.data || null;
   } catch (err) {
-    console.error('API delete customer error:', err);
+    console.warn('API delete customer notice:', err);
     return null;
   }
 }
@@ -261,11 +261,11 @@ export async function wipeAllCustomersAPI(): Promise<AppData | null> {
     const res = await fetch(`${API_BASE}/customers`, {
       method: 'DELETE'
     });
-    if (!res.ok) throw new Error('Failed to wipe customers');
+    if (!res.ok) throw new Error(`HTTP error ${res.status}`);
     const json = await res.json();
-    return json.data;
+    return json.data || null;
   } catch (err) {
-    console.error('API wipe customers error:', err);
+    console.warn('API wipe customers notice:', err);
     return null;
   }
 }
@@ -275,11 +275,11 @@ export async function archiveDayAPI(): Promise<AppData | null> {
     const res = await fetch(`${API_BASE}/archive-day`, {
       method: 'POST'
     });
-    if (!res.ok) throw new Error('Failed to archive day');
+    if (!res.ok) throw new Error(`HTTP error ${res.status}`);
     const json = await res.json();
-    return json.data;
+    return json.data || null;
   } catch (err) {
-    console.error('API archive day error:', err);
+    console.warn('API archive day notice:', err);
     return null;
   }
 }
@@ -289,11 +289,11 @@ export async function deleteHistoryDayAPI(date: string): Promise<AppData | null>
     const res = await fetch(`${API_BASE}/history/${date}`, {
       method: 'DELETE'
     });
-    if (!res.ok) throw new Error('Failed to delete history day');
+    if (!res.ok) throw new Error(`HTTP error ${res.status}`);
     const json = await res.json();
-    return json.data;
+    return json.data || null;
   } catch (err) {
-    console.error('API delete history day error:', err);
+    console.warn('API delete history day notice:', err);
     return null;
   }
 }
@@ -303,11 +303,11 @@ export async function deleteHistoryRowAPI(date: string, id: string): Promise<App
     const res = await fetch(`${API_BASE}/history/${date}/row/${id}`, {
       method: 'DELETE'
     });
-    if (!res.ok) throw new Error('Failed to delete history row');
+    if (!res.ok) throw new Error(`HTTP error ${res.status}`);
     const json = await res.json();
-    return json.data;
+    return json.data || null;
   } catch (err) {
-    console.error('API delete history row error:', err);
+    console.warn('API delete history row notice:', err);
     return null;
   }
 }
@@ -319,11 +319,11 @@ export async function addNotificationAPI(notif: { title: string; msg: string; ki
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify(notif)
     });
-    if (!res.ok) throw new Error('Failed to add notification');
+    if (!res.ok) throw new Error(`HTTP error ${res.status}`);
     const json = await res.json();
-    return json.data;
+    return json.data || null;
   } catch (err) {
-    console.error('API add notification error:', err);
+    console.warn('API add notification notice:', err);
     return null;
   }
 }
@@ -333,7 +333,7 @@ export async function markAllNotificationsReadAPI(): Promise<boolean> {
     const res = await fetch(`${API_BASE}/notifications/mark-all-read`, { method: 'POST' });
     return res.ok;
   } catch (err) {
-    console.error('API mark all read error:', err);
+    console.warn('API mark all read notice:', err);
     return false;
   }
 }
@@ -343,7 +343,61 @@ export async function clearAllNotificationsAPI(): Promise<boolean> {
     const res = await fetch(`${API_BASE}/notifications`, { method: 'DELETE' });
     return res.ok;
   } catch (err) {
-    console.error('API clear all notifications error:', err);
+    console.warn('API clear all notifications notice:', err);
     return false;
+  }
+}
+
+export async function fetchAdminStatusAPI(): Promise<{
+  hasAdminAccount: boolean;
+  adminName?: string | null;
+  adminUsername?: string | null;
+  singleSlotAvailable: boolean;
+}> {
+  try {
+    const res = await fetch(`${API_BASE}/admin/status`);
+    if (!res.ok) throw new Error('Status failed');
+    return await res.json();
+  } catch {
+    return {
+      hasAdminAccount: false,
+      singleSlotAvailable: true
+    };
+  }
+}
+
+export async function registerAdminAPI(data: { name: string; username: string; password: string }): Promise<{
+  success: boolean;
+  message?: string;
+  admin?: { name: string; username: string };
+}> {
+  try {
+    const res = await fetch(`${API_BASE}/admin/register`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(data)
+    });
+    const json = await res.json();
+    return json;
+  } catch (err: any) {
+    return { success: false, message: err?.message || 'Network error registering admin' };
+  }
+}
+
+export async function loginAdminAPI(data: { username: string; password: string }): Promise<{
+  success: boolean;
+  message?: string;
+  admin?: { name: string; username: string };
+}> {
+  try {
+    const res = await fetch(`${API_BASE}/admin/login`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(data)
+    });
+    const json = await res.json();
+    return json;
+  } catch (err: any) {
+    return { success: false, message: err?.message || 'Network error logging in' };
   }
 }

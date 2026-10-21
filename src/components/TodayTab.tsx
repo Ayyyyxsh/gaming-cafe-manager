@@ -83,12 +83,13 @@ export const TodayTab: React.FC<TodayTabProps> = ({
                   toast('No sessions to export today', 'warn');
                   return;
                 }
-                generatePDFReport(todayISO(), reportSessions);
-                toast('PDF Report generated and downloaded!', 'ok');
+                generatePDFReport(todayISO(), reportSessions, { stations, cafeName: 'OH MY GAME — N.E.R.O SPORTS' });
+                toast('Professional Day Audit PDF generated and downloaded!', 'ok');
               }}
-              className="px-3.5 py-2 rounded-xl bg-emerald-600 border border-emerald-400/40 text-white font-['Exo_2'] font-extrabold text-xs uppercase tracking-wider hover:bg-emerald-500 transition-colors flex items-center gap-1.5 cursor-pointer shadow"
+              className="px-3.5 py-2 rounded-xl bg-gradient-to-r from-emerald-600 to-teal-600 border border-emerald-400/40 text-white font-['Exo_2'] font-extrabold text-xs uppercase tracking-wider hover:from-emerald-500 hover:to-teal-500 transition-all flex items-center gap-1.5 cursor-pointer shadow-lg shadow-emerald-950/40"
+              title="Generate systematic, professional daily audit PDF"
             >
-              <Download className="w-4 h-4" /> Download PDF Report
+              <Download className="w-4 h-4" /> Export Day PDF
             </button>
 
             <button
